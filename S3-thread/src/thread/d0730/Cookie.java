@@ -40,6 +40,7 @@ public class Cookie {
 		return maxAge;
 	}
 	public void setMaxAge(int maxAge) {
+		System.out.println("这是张三的代码");
 		this.maxAge=maxAge;
 	}
 	
