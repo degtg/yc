@@ -1,0 +1,376 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>源辰-零食网商品详细</title>
+<meta name="keywords" content="小吃,美食,零食,源辰" />
+<meta name="description" content="各种小吃美食，应有尽有" />
+<link href="images/yc.png" rel="shortcut icon" type="image/x-icon" />
+<link href="css/header.css" rel="stylesheet" type="text/css" />
+<link href="css/index.css" rel="stylesheet" type="text/css" />
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="css/detail.css" type="text/css">
+<link href="css/diss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+</head>
+
+<body>
+	<!-- 顶部区域 -->
+	<header id="header">
+		<!-- 顶部标题区域 -->
+		<div class="htitle">
+			<a href="#" target="_blank" class="location">衡阳</a>
+
+			<div class="header-info">
+				<div class="login-info">
+					<span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span>
+					<span v-else><a href="login.html" title="点击登录">您好，请登录</a></span> <a
+						href="register.html" title="点击注册"> 免费注册 </a>
+				</div>
+
+				<div class="person-info">
+					<span>|</span> <a href="order.html" target="_blank">我的订单</a> 
+					<span>|</span> <a  href="login.html" target="_blank" @click="clearCookie()">退出登录</a> 
+					<span>|</span> <a href="myself.html" target="_blank">个人信息</a>
+				</div>
+
+			</div>
+		</div>
+
+		<script type="text/javascript">
+	var vue=new Vue({
+		el:".login-info",
+	data:{
+		loginedUser:{}
+	},
+	created:function(){
+		var url="UserServlet.do?op=GetLoginedUserServlet";
+		$.post(url,null,function(data){
+			if(data!="null"){
+				vue.$data.loginedUser=JSON.parse(data);
+			}
+		});
+	}
+});
+	function clearCookie(){
+		var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+		if (keys) {
+		for (var i = keys.length; i--;)
+		document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+		}
+	}
+</script>
+		<!-- 顶部搜索区域 -->
+		<div class="search">
+			<div class="search_left">
+				<a href="index.html" title="首页"> 
+				<img src="images/biglogo.jpg" width="260px" height="120px" />
+				</a>
+			</div>
+
+			<div class="search_right">
+				<div class="search_top">
+					<div class="search_div">
+						<input v-model="gname" type="search" class="search-ipt" placeholder="请输入要搜索的内容" />
+                    	<input @click="queryGoods()" type="button" class="search-btn"/>  
+					</div>
+					<div class="buycart">
+						<i class="iconfont">{{goods}}</i> 
+						<a href="cart.html" target="_blank">我的购物车</a>
+					</div>
+				</div>
+
+				<div class="search_item" id="search_item"  >
+            		<a href="#"  class="selected" >全部</a>
+            		<a v-for="t in typelist"  :href=" 'clist.html#'+t.tno" class="nuts" >{{t.tname}}</a>
+        		</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+         var vue2=new Vue({
+            	el:".search",
+            	data:{
+            		hotList:[],
+            		typelist:[],
+            		goods:"",
+            		gname:"",
+            		goods:[],
+            	},
+            	created:function(){
+            		axios.get("../QueryType.do").then(res=>{
+            			this.typelist=res.data;
+            			console.info(res.data);
+            		});
+            		axios.get("cart.do?op=queryNum").then(res=>{
+            			this.goods=res.data[0].b;
+            			
+            		});
+            	},
+            	methods:{
+            		queryGoods(){
+            			axios({
+            				url:"../Query.do",
+            				params:{
+            					gname:this.gname
+            				},
+            				
+            			}).then(res=>{
+            				vue.$data.hotList=res.data;
+            			});
+            		},
+            	}
+            	
+            }); 
+             
+            </script>
+	</header>
+
+	<!-- 面包屑导航 -->
+	<div class="breadcrumb" id="breadcrumb">
+		<a href="javascript:void(0)">全部分类</a> <span>&gt;</span> <a
+			href="javascript:void(0)" id="goods_type">干果</a> <span>&gt;</span> <a
+			href="javascript:void(0)">商品详情</a>
+	</div>
+
+	<!-- 商品展示 -->
+	<div id="g" class="goods_details_con clearfix">
+		<div class="goods_details_pic fl">
+			<img :src="goods.pics">
+		</div>
+		<div  class="goods_details_list fr">
+			<h3>{{goods.name}}</h3>
+			<p>{{goods.describle}}</p>
+
+
+			<div class="price_bar">
+				<span class="show_price">&yen;<em>{{goods.price}}</em>元
+				</span> <span class="show_unit">单位：<em>{{goods.weight}}</em></span>
+			</div>
+			<div class="goods_num clearfix">
+				<div class="num_name fl">数量：</div>
+				<div class="num_add fl">
+					<input v-model="num" type="text" class="num_show fl"  id="goods_count">
+					<a @click="addCount(1)" class="add fr">+</a>
+					<a @click="addCount(-1)" class="minus fr">-</a>
+				</div>
+				<div class="balance_cls">
+					仓库量<span id="store_num">{{goods.weight}}</span>
+				</div>
+			</div>
+			<div class="total">
+				总价：<em>{{goods.price}}</em>元
+			</div>
+			<div class="operate_btn">
+				<a href="javascript:;" onclick="location.href='cart.html'" @click="addCart()" class="buy_btn" id="buy_btn">立即购买</a> 
+				<a href="javascript:void(0);" class="add_cart" id="add_cart"
+					@click="addCart()">加入购物车</a>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	var vue1=new Vue({
+		el:"#g",
+		data:{
+			goods:[],
+			num:1,
+			
+		},
+		created:function(){
+			var gno=location.hash.substring(1);
+			axios.get("product.do?op=queryByGno&gno="+gno).then(res=>{
+				this.goods=res.data;
+				console.log(res.data);
+			});
+		
+		},
+		methods:{
+			addCount(a){
+				if(this.num==1&&a==-1){
+					return;
+				}
+				this.num=this.num+a;
+			},
+			addCart(){
+				var gno=location.hash.substring(1);
+				console.log(gno);
+				console.log(this.num);
+				axios.get("cart.do?op=add&gno="+gno+"&num="+this.num).then(res=>{
+					alert(res.data);
+				})
+			}
+		}
+	})
+	</script>
+
+	<!-- 商品详情 -->
+	<div id="goods">
+		<div class="main_wrap clearfix">
+			<div class="l_wrap fl clearfix">
+				<div class="new_goods" text-align="center">
+					<h3>新品推荐</h3>
+					<ul>
+						<li v-for="t in newlist"><a :href="'detail.html?#'+t.gno"><img
+								:src="t.pics"></a> <span href="#"> {{t.gname}}</span> <span
+							class="price"> {{t.price}}</span></li>
+					</ul>
+				</div>
+			</div>
+			<div class="r_wrap fr clearfix">
+				<ul class="tab-list clearfloat">
+					<li class="tab-itom"><input type="radio" id="testTabRadio1"
+						class="test-radio" name="tab" checked="checked"> <label
+						class="test-label" for="testTabRadio1">商品介绍</label>
+						<div class="tab-box" v-for="d in dlist">
+							{{d.gname}} 一整{{d.unit}} <br>保质期:{{d.qperied}}<br>{{d.intro}}<br>{{d.descr}}
+						</div></li>
+					<li class="tab-itom"><input type="radio" id="testTabRadio2"
+						class="test-radio" name="tab"> <label class="test-label"
+						for="testTabRadio2">评论</label>
+						<div class="tab-box">
+							<ul v-for="a in alllist">
+							
+								<li class="name"> <img :src="a.photo" style="width:20; height:20px;"/> {{a.nickName}}:</li>
+								<li class="time">({{a.publishtime}})</li>
+								<br>
+								<li class="comment">{{a.content}} </li>
+								<br>
+							</ul>
+							<div class="reply_div">
+							<input v-model="content" type="reply" class="reply" placeholder="回复"  style=" width:500px; height:20px;margin-left:40px; margin-top:50px;"/>
+							<input type="button" value="发表" @click="reply()" />
+						</div>
+					</div>
+					</li>
+				</ul>
+			</div>
+			<div class="popup_con">
+				<div class="popup">
+					<p id="popup_info"></p>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	/* var Start=location.hash.substring(0,1);
+	var end=location.hash.substring(3); */
+	var gno=location.hash.substring(1);
+
+var vue2=new Vue({
+	el:"#goods",
+	data:{
+		newlist:[],
+		dlist:[],
+		alllist:[],
+		gno:gno,
+		content:""
+		
+		
+		
+		
+	},
+	created:function(){
+	
+		axios.get("../QueryNewPut.do").then(res=>{
+			this.newlist=res.data;
+		});
+		/* var gno=location.hash.substring(1); */
+		/* axios.get("../QueryDetail.do?gno="+this.gno).then(res=>{
+			this.dlist=res.data;
+		}); */
+		
+		axios({
+			url:"../QueryDetail.do",
+			params:{
+				gno:gno
+			},
+			
+		}).then(res=>{
+			this.dlist=res.data;
+			console.log(gno);
+		});
+		
+		axios({
+			url:"../QueryDiscuss.do",
+			params:{
+				gno:gno
+			},
+			
+		}).then(res=>{
+			this.alllist=res.data;
+			//alert(JSON.stringify(res.data))
+			console.log(this.alllist);
+		});
+		
+		
+	},
+	methods:{
+		reply(){
+		axios({
+			url:"../InsertDiscuss.do",
+			params:{
+				content:this.content,
+				gno:gno
+			},
+			
+		}).then(res=>{
+			this.data=res.data;
+			console.log(res);
+			location.href="detail.html#"+this.gno;
+			alert(res);
+		});
+		
+		}
+	}
+});
+
+
+</script>
+
+	<!-- 版权所有 -->
+	<footer>
+		<div class="foot_link">
+			<a href="#">关于我们</a> <span> | </span> <a href="#">联系我们</a> <span>
+				| </span> <a href="#">招聘广告</a> <span> | </span> <a href="#">友情链接</a>
+		</div>
+		<p>
+			CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com"
+				target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd
+		</p>
+		<p>电话：0734-8355998 湘ICP备16015987号-1</p>
+	</footer>
+	<script src="js/jquery-3.4.1.min.js"></script>
+	<script>
+function addCount(num) {
+	var nums = parseInt($("#goods_count").val());
+	var store_num = parseInt($("#store_num").val());
+	nums += parseInt(num);
+	if (nums <= 0) {
+		$("#goods_count").val(1);
+		return;
+	}
+	
+	if (nums > store_num){
+		$("#goods_count").val(store_num);
+		return;
+	}
+	$("#goods_count").val(nums);
+}
+
+function addCart() {
+	$("#popup_info").text("加入购物车成功...");
+	$('.popup_con').fadeIn('fast', function() {
+		setTimeout(function(){
+			$('.popup_con').fadeOut('fast',function(){
+				// location.href = 'alipay/pay/' + data.msg +"/" + price;
+			});	
+		}, 2000)
+	});
+}
+</script>
+</body>
+</html>

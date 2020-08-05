@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>订单管理</title>
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../js/axios.min.js"></script>
+
+
+<style type="text/css">
+input{
+	width:200px;
+}
+</style>
+<script type="text/javascript">
+//图片字段的格式化方法
+function fmtImg(value,row,index){
+	return "<img height='100px' src='"+value+"'>";
+}
+
+//日期字段的格式化方法
+function fmtDate(odate){
+	var y=odate.getFullYear();
+	var m=odate.getMonth()+1;
+	var d=odate.getDate();
+	return y+"-"+m+'-'+d;
+}
+function query(){
+	$('#dg').datagrid('load',{
+		ono:$("#ono").textbox('getValue'),
+		price:$("#price").textbox('getValue'),
+
+	});
+}
+
+//操作字段的格式化方法
+function fmtOp(value,row,index){
+	return "<button onclick='edit("+index+")'>修改 </button>  "+" <button onclick='del("+index+")'>删除 </button>";
+} 
+
+function del(index){
+	var msg="确定要删除该订单吗？";
+	if(confirm(msg)){
+		var row=$('#dg').datagrid("getRows");
+		axios({
+			url:"../../orders.do?op=delete",
+			params:{
+				ono:row[index].ono
+			}
+		}).then((res)=>{
+			alert(res.data);
+			$('#dg').datagrid("reload");
+		});
+	}else{
+		return false;
+	}
+	
+}
+
+//打开修改窗口
+function edit(index){
+	var rows=$('#dg').datagrid("getRows");
+	$("#dd").dialog('open');
+	var row=rows[index];
+	$('#ff').form('load',row);
+}
+
+function insert(){
+	$("#ad").dialog('open');
+}
+
+
+function save(){
+	$('#ff').form('submit',{
+		url:"../../../SaveOrders.do",
+		//回调函数
+		success:res=>{
+			alert(res);
+			//关闭窗口
+			$("#dd").dialog('close');
+			//刷新表格
+			$("#dg").datagrid('reload');
+		}
+	});
+}
+
+
+</script>
+</head>
+<body>
+
+<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'north'" style="height:50px">
+		<input class="easyui-textbox" label="订单号:" style="width:200px " id="ono">
+		<input class="easyui-textbox" label="价格:" style="width:200px"  id="price">
+		<a id="btn" href="#" class="easyui-linkbutton" 
+		data-options="iconCls:'icon-search'"
+		onclick="query()">查询</a>
+		</div>
+		<div data-options="region:'center',title:'查询结果',iconCls:'icon-ok'">
+			<table class="easyui-datagrid" id="dg"
+					data-options="
+					url:'../../orders.do?op=QueryOrd',
+					method:'get',
+					border:false,
+					singleSelect:true,
+					fit:true,
+					fitColumns:true,
+					pagination:true,"><!-- 等比分配屏幕宽度 -->
+				<thead>
+					<tr>
+						<th data-options="field:'ono'" width="100">ono</th>
+						<th data-options="field:'odate'" width="100">odate</th>
+						<th data-options="field:'ano'" width="100">ano</th>
+						<th data-options="field:'sdate'" width="100">sdate</th>
+						<th data-options="field:'rdate'" width="100">rdate</th>
+						<th data-options="field:'status'" width="100">status</th>
+						<th data-options="field:'price'" width="100">price</th>
+						<th data-options="field:'invoice'" width="100">invoice</th>
+						<th data-options="field:'idd'" width="100" formatter="fmtOp" align="center" colspan="2">操作</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	
+	
+	</div>
+	
+	<!-- 订单修改窗口 -->
+	<div id="dd" class="easyui-dialog" title="My Dialog" style="width:400px;height:400px;"
+    data-options="
+    iconCls:'icon-save',
+    resizable:true,
+    modal:true,
+    closed:true,
+    buttons:'#bb'">
+    <form action="#" id="ff">
+    <input class="easyui-textbox" name="ono" label="ono:"><br>
+	<input class="easyui-datebox" name="odate" label="odate:" data-options="formatter:fmtDate"><br>
+	<input class="easyui-textbox" name="ano" label="ano:"><br>
+	<input class="easyui-datebox" name="sdate" label="sdate:" data-options="formatter:fmtDate"><br>
+	<input class="easyui-datebox" name="rdate" label="rdate:" data-options="formatter:fmtDate"><br>
+	<input class="easyui-combobox" name="status" label="status:"
+		url="../../orders.do?op=QueryStatusItems"
+		valueField="status"
+		textField="status"><br>
+	<input class="easyui-textbox" name="price" label="price:"><br>
+	<input class="easyui-textbox" name="invoice" label="invoice:"><br>
+	</form>
+</div>
+	
+	
+	<div id="bb">
+	<a href="#" class="easyui-linkbutton" onclick="save()">保存</a>
+	<a href="#" class="easyui-linkbutton">取消</a>
+</div>
+
+</body>
+</html>

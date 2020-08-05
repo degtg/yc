@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/dre.css"/>
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<link href="css/index.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+
+<title>我的足迹</title>
+</head>
+<style>
+	.help-main p {
+		line-height: 50px;
+	}
+</style>
+<body>
+<div class="top" id="item4">
+	<div class="container clearfix">
+		<ul class="clearfix fr">
+			<li><a href="login.html" >登录</a></li>
+			<li><a href="register.html" >注册</a></li>
+			<li><a href="member.html" style="border: none">个人中心</a></li>
+		</ul>
+	</div>
+</div>
+
+
+
+<div class="help-wrap">
+	<div class="container clearfix">
+		<div class="bread">当前位置：
+			<a href="index.html">首页</a> >
+			<a href="myself.html">个人中心</a> >
+			<a href="myself.html">我的足迹</a>
+		</div>
+		<div class="help-l fl">
+			<div class="help-item">
+				<div class="help-item-title">个人中心
+					<a href="javascript:void(0)" class="abs"></a>
+				</div>
+				<div class="help-item-list">
+					<ul>
+						<li><a href="myself.html">个人信息</a></li>
+						<li><a href="password.html">修改密码</a></li>
+						<li><a href="order.html">我的订单</a></li>
+						<li><a href="cart.html">我的购物车</a></li>
+						<li><a href="myfoot.html">我的足迹</a></li>
+						<li><a href="myaddress.html">我的收货地址</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="app" class="help-r fr">
+			<div class="help-item-title" >我的足迹</div>
+				<div class="view_goods" style="height:800px;">
+				<ul  id="view_goods">
+					<li  v-for="t in list" class="hot_box" ><i class="all_i i_t"  ></i> <i
+						class="all_i i_r"></i> <i class="all_i i_b"></i> <i
+						class="all_i i_l"></i> <a :href="'detail.html?#'+t.gno"
+						target="_blank" class="hot_warp"> <img :src="t.pics"
+							title="好吃" /> <span>{{t.gname}}</span>
+					</a>
+						<div class="view_info">
+							<span class="price">{{t.price}}</span> <span>/{{t.weight}}</span> 
+							<span class="buy" @click="addCart(t.gno)">&nbsp;</span>
+							<span><img :id="'img_'+t.gno" class="like" src="images/like1.jpg" onclick='onoff(this)'></span>
+						</div></li>
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+
+
+
+<script type="text/javascript">
+
+var vue1=new Vue({
+	el:".help-wrap",
+	data:{
+		list:[],
+		
+	},
+	created:function(){
+		axios({
+			url:"../RecentServlet.do",
+			params:{
+			}
+		}).then((res)=>{
+			console.info(res.data);
+				this.list=res.data;
+		});
+
+	}
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/dre.css"/>
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+
+
+
+<title>修改密码</title>
+</head>
+<style>
+	.help-main p {
+		line-height: 50px;
+	}
+</style>
+<body>
+<div class="top" id="item4">
+	<div class="container clearfix">
+		<ul class="clearfix fr">
+			<li><span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span></li>	
+		<li><span v-else><a href="login.html" title="点击登录">您好，请登录</a></span> </li>
+			<li><a href="login.html" >登录</a></li>
+			<li><a href="login.html" target="_blank" @click="clearCookie()">退出登录</a> </li>
+		
+		</ul>
+	</div>
+</div>
+
+<script type="text/javascript">
+				var vue=new Vue({
+					el:"#item4",
+					data:{
+						loginedUser:{}
+					},
+					created:function(){
+						var url="UserServlet.do?op=GetLoginedUserServlet";
+						$.post(url,null,function(data){
+							if(data!="null"){
+								vue.$data.loginedUser=JSON.parse(data);
+							}
+						});	
+						//location.href="index.html";
+					},
+				});
+				function clearCookie(){
+					var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+					if (keys) {
+					for (var i = keys.length; i--;)
+					document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+					}
+				}
+			</script>
+
+
+<div class="help-wrap">
+	<div class="container clearfix">
+		<div class="bread">当前位置：
+			<a href="index.html">首页</a> >
+			<a href="myself.html">个人中心</a> >
+			<a href="pwd.html">修改密码</a>
+		</div>
+		<div class="help-l fl">
+			<div class="help-item">
+				<div class="help-item-title">个人中心
+					<a href="javascript:void(0)" class="abs"></a>
+				</div>
+				<div class="help-item-list">
+					<ul>
+						<li><a href="myself.html">个人信息</a></li>
+						<li><a href="password.html">修改密码</a></li>
+						<li><a href="order.html">我的订单</a></li>
+						<li><a href="cart.html">我的购物车</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="help-r fr" >
+			<div class="help-item-title">修改密码</div>
+			<div class="help-main">
+				<form action="">
+					<p><span class="pwd">原始密码：</span>&nbsp;&nbsp;&nbsp;
+					<input v-model="pwd" type="password" value="" placeholder="请输入当前密码"></p>
+				
+					<p><span class="npwd">新密码：</span>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input v-model="npwd" type="password" value="" placeholder="请输入新密码"></p>
+					
+					<p><span class="cpwd">确认新密码：</span>
+					<input v-model="cpwd" type="password" value="" placeholder="请确认新密码"></p>
+					
+					<input class="save" type="button" @click="change()" value="确认修改"/>
+				
+					
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+var vue =new Vue({
+	el:".help-main",
+	data:{
+		pwd:"",
+		npwd:"",
+		cpwd:"",
+		mno:4,
+	},
+	
+	methods:{
+	    	change(){
+	    		var url="../PwdServlet.do";
+	    		var user={
+	    		        pwd:this.pwd,
+	    		        npwd:this.npwd,
+	    		        cpwd:this.cpwd,
+	    		        mno:this.mno,
+	    		        
+	    		};
+	    		$.post(url,user,function(msg){
+	    			if(msg=="密码修改成功！亲~请重写登入"){
+	    				clearCookie();
+	    				location.href="login.html";
+	    			}
+	    			alert(msg);
+	    		});
+	    	},
+	    	
+	    }
+	});
+
+</script>
+<script type="text/javascript">
+function clearCookie(){
+	var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+	if (keys) {
+	for (var i = keys.length; i--;)
+	document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+	}
+}
+</script>
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+</body>
+</html>

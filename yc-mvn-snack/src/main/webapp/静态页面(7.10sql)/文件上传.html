@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>文件上传</title>
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript">
+function upload2(){
+	var url="../UploadImgs.s";
+	var param=new FormData(f1);
+	post(url,param,function(text){
+		head.src="/com-yc-snack"+text;
+	})
+}
+</script>
+</head>
+<body>
+
+<fieldset>
+<legend>王总: 旭元呀, 我想让会员可以上传自己的头像, 有没有法子呀? </legend>
+<form id=f1>
+	<img alt="上传头像" src="images/showPicture.jpg" height="200px" id=head><br>
+	文件: <input id="file4" type="file" name="file"><br>
+	<button type="button" onclick="upload2()">上传头像</button>
+</form>
+</fieldset>
+
+</body>
+</html>
