@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>源辰-零食网购物车</title>
+<meta name="keywords" content="小吃,美食,零食,源辰" />
+<meta name="description" content="各种小吃美食，应有尽有" />
+<link href="images/yc.png" rel="shortcut icon" type="image/x-icon" />
+<link href="css/header.css" rel="stylesheet" type="text/css" />
+<link href="css/cart.css" rel="stylesheet" type="text/css" />
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<script type="text/javascript" src="js/ajax.js"></script>
+</head>
+
+<body>
+<div id="e">
+		<!-- 顶部区域 -->
+	<header id="header">
+			<!-- 顶部标题区域 -->
+			<div class="htitle">
+				<a href="#" target="_blank" class="location">衡阳</a>
+
+				<div class="header-info">
+					<div class="login-info">
+						<span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span>
+						<span v-else><a href="login.html" title="点击登录">您好，请登录</a></span> <a
+							href="register.html" title="点击注册"> 免费注册 </a>
+					</div>
+
+
+					<div class="person-info">
+						<span>|</span> <a href="order.html" target="_blank">我的订单</a>
+						<span>|</span> <a  href="login.html" target="_blank" @click="clearCookie()">退出登录</a> 
+						<span>|</span> <a href="myself.html" target="_blank">个人信息</a>
+					</div>
+
+				</div>
+			</div>
+			 <!-- 顶部搜索区域 -->
+    <div class="search">
+    	<div class="search_left">
+    		<a href="index.html" title="首页">
+    		
+             <img src="images/cartss.jpg" width="260px" height="120px"/> 
+            </a>
+        </div>
+    </div>
+
+			
+			
+		</header>
+		<!-- 购物车 -->
+		<article>
+			<div class="cart_con">
+				<h2 class="total_count">全部商品<em id="totalcount1">{{goods}}</em>件</h2>
+				<div class="cart_list_th clearfix">
+					<ul>
+						<li class="col01">商品名称</li>
+						<li class="col02">商品单位</li>
+						<li class="col03">商品价格(元)</li>
+						<li class="col04">数量</li>
+						<li class="col05">小计</li>
+						<li class="col06">操作</li>
+					</ul>
+				</div>
+				
+				<div  v-for="c in carts" id="cart" class="cart_list_td clearfix" id="cart_list">
+					<ul >
+						<li class="col01"><input type="checkbox" checked name="options" :id="c.cno" v-model="cartsid" :value="c.cno" @click="showcarts(c.cno,c.num*c.price,c.num)" ></li>
+						<li class="col02"><img :src="c.pics"></li>
+						<li class="col03">{{c.gname}}<br> <em>{{c.price}}/{{c.weight}}</em></li>
+						<li class="col04">{{c.weight}}</li>
+						<li class="col05">{{c.price}}</li>
+						 <li class="col06">
+                	<div class="num_add">
+                    	<a href="javascript:void(0)" @click="lost(c.gno,c.num,c.price)" class="minus fl">-</a>
+                        <input  type="text"  v-model="c.num" class="num_show fl">
+                        <a href="javascript:void(0)" @click="add(c.gno,c.num,c.price)" class="add fl">+</a>
+                    </div>
+               		 </li>
+						<li class="col07">{{c.price*c.num}}</li>
+						<li class="col08"><a href="javascript:;"
+							@click="delGoods(c.cno)">删除</a></li>
+					</ul>
+				</div>
+				<div  class="setElements">
+        			<ul >
+            			<li class="col01"><input type="checkbox" v-model="flag" @click="All" value="carts.gno" ></li>
+            			<li class="col02"><label for="all">全选</label></li>
+                		<li  class="col03"><button onclick="clearall()">清空购物车</button>  合计(不含运费)：<!-- <span>&yen;</span>--><em id="totalPrices1"> {{totalprice}}</em><br>共计{{totalnum}}<!-- <b id="totalNumbers1"></b> -->件商品</li>
+                		<li class="col04"><a target="_blank" @click="pay()" >去结算</a></li>
+            		</ul>
+        	  </div>
+			</div>
+		</article>
+
+	</div>
+	<script type="text/javascript">
+	function clearall(){
+		axios({
+			url:"cart.do?op=delbymno",
+		}).then(res=>{
+			alert(res.data.text)
+		})
+		setTimeout(function(){location.reload()},1000);
+	}
+	</script>
+	<script type="text/javascript">
+        var vue=new Vue({
+        	el:"#e",
+        	data:{
+        		goods:[],
+        		carts:[],
+        		gno:"",
+        		num:"",
+        		loginedUser:{},
+        		chooses:[],
+        		cartsid:[],
+        		totalprice:0,
+        		totalnum:0,
+        		cnos:[],//存储结算的购物车编号
+        		flag:true
+        		
+        		
+        		
+        	},
+        	created:function(){
+        		axios.all([query(),GetLogined(),checkLogined(),queryCart()]).then(axios.spread((f1,f2,f3,f4)=>{
+        			this.carts=f1.data;
+        			console.log(f1.data);
+        			for(var c of this.carts){
+        				console.log(1);
+        				this.cartsid.push(c.cno);
+        				this.cartsid.push(c.num);
+        				this.totalprice=this.totalprice+c.num*c.price;
+        				this.totalnum=this.totalnum+c.num;
+        				
+        				//console.info(this.cartsid);
+        				
+        			}
+        			if(f2.data!="null"){
+						this.loginedUser=f2.data;
+					}
+        			//console.log(f3.data);
+        			if(f3.data==null){
+        				alert("亲~你还未登入哦，请先登入！");
+        				location.href="login.html";
+        			}
+        			this.goods=f4.data[0].b;
+        		}));
+        		
+
+        	},
+        	methods:{
+        		All(){
+        			console.log(this.flag);
+        			if(this.flag==true){
+        				$.each($('input[name="options"]'),function(){
+                			this.checked=false;
+                		});
+        			}else{
+        				$.each($('input[name="options"]'),function(){
+                			this.checked=true;
+                		});
+        			}
+        		},
+        		showcarts(cno,currentprice,num){
+        			var a=$('input[id='+cno+']').prop("checked");
+        			if(a==true){
+        				this.totalprice=this.totalprice+currentprice;
+        				this.totalnum=this.totalnum+num;
+        			}else{
+        				this.flag=false;
+        				this.totalprice=this.totalprice-currentprice;
+        				this.totalnum=this.totalnum-num;
+        			}
+        			
+        			
+        		},
+        		lost(gno,num,price){
+        			if(num>1){
+        				axios.get("cart.do?op=UpdateNumByGno&gno="+gno+"&num="+num).then(res=>{
+        					this.totalprice=this.totalprice-price;
+        					this.totalnum=this.totalnum-1;
+            				this.carts=res.data;
+            				this.query1();
+            			})
+        			}else{
+        				alert("该宝贝不能再减少了~");
+        			}
+        			
+        		},
+        		add(gno,num,price){
+        			if(num>=1){
+        				axios.get("cart.do?op=UpdateNumByGno1&gno="+gno+"&num="+num).then(res=>{
+        					this.totalprice=this.totalprice+price;
+        					this.totalnum=this.totalnum+1;
+            				this.carts=res.data;
+            				this.query1();
+            			})
+        			}
+        			
+        		},
+        		query1(){
+                	axios.get("cart.do?op=query").then(res=>{
+                		this.carts=res.data;
+                	})
+                	axios.get("cart.do?op=queryNum").then(res=>{
+                		this.goods=res.data[0].b;
+                	})
+                },
+                queryCart(){
+                	axios.get("cart.do?op=queryNum").then(res=>{
+                		this.carts=res.data;
+                		this.goods=f4.data[0].b;
+                	})
+            	},
+        		pay(){
+            		var that=this;
+            		$.each($('input[name="options"]'),function(){
+            			if(this.checked){
+            				that.cnos.push(this.id);
+            				
+            			}
+            		});
+            		console.log(this.cnos);
+            		$.get('orders.do?op=add',{cnos:this.cnos},function(res){
+            			if(res==1){
+            				location.href="pay.html?"+that.cnos;
+            			}
+            			
+            		});
+        			
+        		},
+        		//删除功能 后台代码还未完成
+        		delGoods(cno){
+        			axios.get("cart.do?op=del&cno="+cno).then(res=>{
+        				alert(res.data.text);
+        				setTimeout(function(){location.reload()},1000);
+        			});
+        			
+        		},
+        		
+        	}
+        });
+        function checkLogined(){
+        	return axios.get('../LoginServlet.do?op=checkLogin');
+        }
+        function query(){
+        	return axios.get('cart.do?op=query');
+        }
+        function GetLogined(){
+        	return axios.get('UserServlet.do?op=GetLoginedUserServlet');
+        }
+        function queryCart(){
+    		return axios.get("cart.do?op=queryNum");
+    	}
+        function clearCookie(){
+			var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+			if (keys) {
+			for (var i = keys.length; i--;)
+			document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+			}
+		}
+        </script>
+
+	
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+<script src="js/jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="js/cart.js" type="text/javascript"></script>
+</body>
+</html>

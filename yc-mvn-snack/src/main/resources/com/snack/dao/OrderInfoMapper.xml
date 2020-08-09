@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.snack.dao.OrderInfoMapper">
+
+
+ 
+ <insert id="insert" useGeneratedKeys="true" keyProperty="ono" keyColumn="ono">
+    insert into orderiteminfo values(null,now(),#{ano},now(),now(),#{status},#{price},#{invoice})
+  </insert>
+ 	
+</mapper>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>验证码</title>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<style type="text/css">
+div {
+	
+	text-align: center;
+	color:purple; 
+	background: pink;
+	height: 400px;
+	
+}
+legend {
+	color:purple;
+	font:bolder;
+
+}
+label {
+	border-bottom:50px;
+	display: inline-block;
+	width: 200px;
+	line-height: 50px;
+}
+
+label * {
+
+	vertical-align: middle;
+}
+
+.left {
+	text-align: left;
+	
+}
+
+.right {
+	width: 100px;
+	text-align: right;
+}
+</style>
+</head>
+<body>
+	<fieldset id="app2">
+		<legend >忘记密码>>找回密码</legend>
+		<hr> 
+		<div>
+			<label class="right">用户名:</label> <label class="left"><input v-model="realName" placeholder="请输入用户名"></label><br> 
+			<label class="right">新密码:</label> <label class="left"><input type="password" v-model="cpwd" placeholder="请输入重置密码"></label><br>
+			<label class="right">邮箱:</label> <label class="left">
+				<input v-model="email" placeholder="请输入邮箱">
+			</label><br>  
+			<label class="right" >验证码:</label> <label class="left">
+				<input v-model="yzm" size=6>
+				<button @click="VerifyYzm()">发送验证码</button> 
+			</label><br>
+			<label class="right"><span><a href="login.html" title="点击返回首页">首页</a></span></label>
+			<label class="left"><button @click="check()" >保存</button></label><br> 
+		</div>
+	</fieldset>
+	<script type="text/javascript">
+var vue1=new Vue({
+	el:"#app2",
+	data : {
+		realName:"",
+		cpwd:"",
+		email:"",
+		yzm:""
+	},
+	created:function(){
+	},
+	methods:{
+		VerifyYzm(){
+			axios.get("../VYzm?email="+this.email+"&realName="+this.realName).then(res=>{
+				console.log(res.data);
+			});
+		},
+		check(){
+			axios.get("../checkInfo.do?realName="+this.realName+"&cpwd="+this.cpwd+"&email="+this.email+"&yzm="+this.yzm).then(res=>{
+				alert(res.data);
+			});
+	    }
+	}
+})
+</script>
+</body>
+</html>

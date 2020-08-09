@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/dre2.css"/>
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<link href="css/disorder.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<title>个人信息</title>
+</head>
+<style>
+	.help-main p {
+		line-height: 50px;
+	}
+</style>
+<body>
+<div class="top" id="item4">
+	<div class="container clearfix">
+		<ul class="clearfix fr">
+			<li><a href="login.html" >登录</a></li>
+			<li><a href="register.html" >>>注册</a></li>
+			<li><a href="member.html" style="border: none">>>个人中心</a></li>
+		</ul>
+	</div>
+</div>
+
+
+
+<div class="help-wrap">
+	<div class="container clearfix">
+		<div class="bread">当前位置：
+			<a href="index.html">首页</a> 
+			<a href="myself.html">个人中心</a> 
+			<a href="myself.html">个人信息</a>
+		</div>
+		
+		<div id="app" class="help-r fr" style="width:800px; height:900px; margin-right:200px; background:#fff7ff; ">
+			<div class="help-item-title" >评论区</div>
+			<div class="disgoods" v-for="oi in olist" >
+				<ul  class="goods_list_td clearfix" >
+					<li class="col02"><img :src="oi.pics" style=" width:70px; height:70px;"></li>
+					<li class="col03">{{oi.gname}}</li>
+					<li class="col04">{{oi.weight}}</li>
+					<li class="col04">{{oi.price}}$</li>
+				</ul>
+				<div class="help-main" style="margin-top:50px;">
+				<form action="" id="f3" style="position: relative;bottom:10px " > 
+					<img  src="image/show.jpg" v-model="picture1" onclick="img1.click()" style="height:150px; width:150px;  margin-left:80px" id=head1>
+					<img  src="image/show.jpg" v-model="picture2" onclick="img2.click()" style="height:150px; width:150px;  margin-left:5px" id=head2>
+					<img  src="image/show.jpg" v-model="picture3" onclick="img3.click()" style="height:150px; width:150px;  margin-left:5px" id=head3><br>
+					<div style="display:none;">
+					<input name="file" type="file" id="img1">
+					<input name="file" type="file" id="img2">
+					<input name="file" type="file" id="img3">
+					<br>
+					</div>
+					<button type="button"  @click="upload2()" style="margin-left:100px;margin-top:20px;height:30px;width:100px;">上传图片</button>
+				</form>
+				
+				<ul class="dis">
+				<textarea v-model="content" type="text" rows="5" cols="20" placeholder="在这里输入内容..."  style="width:600px;height:150px; margin-top:50px;margin-left:60px;font-size:15px;"></textarea>
+				<button type="button" @click="comment()" style="margin-left:80px;margin-top:20px;height:30px;width:100px;">发表评论</button>
+				</ul>
+			</div>
+			</div>
+			
+			
+			
+			<div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var gno=location.hash.substring(1);
+var vue=new Vue({
+	el:"#app",
+	data:{
+		olist:[],
+		plist:[],
+		content:"",
+		picture1:"",
+		picture2:"",
+		picture3:""
+	},
+	created:function(){
+		axios({
+			url:"../QueryDisOrd.do",
+			params:{
+				gno:gno
+			},
+		}).then(res=>{
+			this.olist=res.data;
+		});
+		
+		axios.get("../QueryPhoto.do").then(res=>{
+			this.plist=res.data;
+			console.info(res.data);
+		});
+		
+	},
+	methods:{
+		comment(){
+			
+			axios({
+				url:"../InsertDisc.do?op=goComment",
+				params:{
+					content:this.content,
+					picture1:this.picture1,
+					picture2:this.picture2,
+					picture3:this.picture3,
+					gno:gno
+				},
+			}).then(res=>{
+				
+				this.data=res.data;
+				if(res.data=="亲~评论成功！！") {
+					alert(res.data);
+					location.href="detail.html#"+gno;
+				}else{
+					alert(res.data);
+				}
+			});
+			
+			axios({
+				url:"../InsertDisc.do?op=isComment",
+				params:{
+					gno:gno
+				},
+			}).then(res=>{
+			});
+		},
+		upload2(){
+			var url="../UploadImg2.do";
+			//ajax 文件上传必须使用FormData 对象，用于封装form 表单元素
+			var param=new FormData(f3);
+			axios.post(url,param).then(res=>{
+				/* alert(text); */
+				//将服务器的绝对路径转为浏览器的绝对路径
+				alert(res.data.msg);
+				if(res.data.code){
+					head1.src=res.data.data.split(",")[0];
+					head2.src=res.data.data.split(",")[1];
+					head3.src=res.data.data.split(",")[2];
+					this.picture1=res.data.data.split(",")[0];
+					this.picture2=res.data.data.split(",")[1];
+					this.picture3=res.data.data.split(",")[2];
+				}
+				 /* head1.src="/snack"+text; 
+				 head2.src="/snack"+text;
+				 head3.src="/snack"+text;
+				 location.href="comment.html"; */
+			});
+		}
+		
+	}
+});
+
+
+</script>
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+</body>
+</html>

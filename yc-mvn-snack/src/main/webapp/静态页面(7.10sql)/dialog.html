@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style type="text/css">
+			body{
+				margin: 0px;
+			}
+			.zhezhao{
+				position: fixed;
+				left: 0px;
+				top: 0px;
+				background: #000;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,0.5);
+			}
+			.tankuang{
+				position: relative;
+				background: #fff;
+				width: 60%;
+				height: 70%;
+				border-radius: 5px;
+				margin: 5% auto;
+			}
+			#header{
+				height: 40px;
+			}
+			#header-right{
+				position: absolute;
+				width: 25px;
+				height: 25px;
+				border-radius: 5px;
+				background: red;
+				color: #fff;
+				right: 5px;
+				top: 5px;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<button type="button" onclick="dianwo()">点我</button>
+		<div class="zhezhao" id='zhezhao'>
+			<div class="tankuang">
+				<div id="header">
+				<br><br><br>
+					<p><span class="nice">用户名：</span><input id="url"  type="text"  v-model="list.pname"  disabled="disabled"></p>   
+					<p><span class="nice">昵称：</span><input id="url1"   type="text"    v-model="list.pnname"  disabled="disabled"></p>
+					<p><span class="nice">性别：</span><input id="url2" type="text"    v-model="list.sex"  disabled="disabled"></p>
+					<p><span class="nice">所在地区：</span><input id="url3" type="text"   v-model="list.area"  disabled="disabled"></p>
+					
+					 <div id="header-right" onclick="hidder()">A</div> 
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			document.getElementById('zhezhao').style.display="none";
+			function dianwo(){
+				document.getElementById('zhezhao').style.display="";
+			}
+			function hidder(){
+				document.getElementById('zhezhao').style.display="none";
+			}
+		</script>
+	</body>
+</html>
+

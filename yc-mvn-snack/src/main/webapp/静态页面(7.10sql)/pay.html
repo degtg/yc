@@ -1,0 +1,466 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>源辰-零食网支付</title>
+<meta name="keywords" content="小吃,美食,零食,源辰" />
+<meta name="description" content="各种小吃美食，应有尽有" />
+<link href="images/yc.png" rel="shortcut icon" type="image/x-icon" />
+<link href="css/header.css" rel="stylesheet" type="text/css" />
+<link href="css/pay.css" rel="stylesheet" type="text/css" />
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+
+<script type="text/javascript" src="js/axios.min.js"></script>
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+</head>
+<script>
+
+function test(){
+	var xhr
+	try{
+		xhr=new XMLHttpRequest();
+	}catch(e){
+		xhr=new ActiveXObject("xxxxxxx");
+	}
+
+	xhr.onreadystatechange=function(){
+		
+		if(xhr.readyState==4 && xhr.status==200){
+			var arr=xhr.responseText.split(",");
+			console.info(arr);
+		}
+	}
+	
+	//开启连接 第三个参数 true 异步|false 同步
+	xhr.open("POST","../area.do");
+	//发送请求 发送的请求参数
+	xhr.send("a=1&b=2&c=3");
+}
+//js没有重载 后面定义的函数直接覆盖前面的函数
+function init(){
+	loadSheng(0);
+	loadShi(0);
+	loadXian(0,0);
+}
+
+function loadSheng(){
+	post("../area.do","level=0",function(text){
+		var arr=text.split(",");
+		vue2.$data.shengItems=arr;
+	});
+}
+/**
+ * 更新市区数据，要传1个参数
+ */
+function loadShi(shengIndex){
+	//未传参 数 shengIndex的值是undefined
+	if(shengIndex==undefined){
+		shengIndex=0;
+	}
+	console.log(shengIndex);
+	post("../area.do","level=1&shengIndex="+shengIndex,function(text){
+		var arr=text.split(",");
+		vue2.$data.shiItems=arr;
+	});
+}
+/**
+ * 更新县区数据，要传两个参数
+ */
+ function loadXian(shengIndex,shiIndex){
+		post("../area.do","level=2&shengIndex="+shengIndex+"&shiIndex="+shiIndex,function(text){
+			var arr=text.split(",");
+			vue2.$data.xianItems=arr;
+		});
+	}
+ 
+ //封装好的Ajax方法
+ function post(url,param,callback){
+	 var xhr
+	 try{
+		xhr=new XMLHttpRequest();
+	}catch(e){
+		xhr=new ActiveXObject("xxxxxxx");
+	}
+	xhr.onreadystatechange=function(){
+		if(xhr.readyState==4&&xhr.status==200){
+			callback(xhr.responseText);
+		}
+	}	
+	//开启连接 第三个参数 true 异步|false 同步
+	xhr.open("POST",url);
+	//post 提交数据的编码方式
+	xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	//发送请求 发送的请求参数
+	xhr.send(param);
+ }
+</script>
+<body>
+<!-- 顶部区域 -->
+<header id="header">
+	<!-- 顶部标题区域 -->
+	<div class="htitle">
+    	<a href="#" target="_blank" class="location">衡阳</a>
+        
+       <div class="header-info">
+            <div class="login-info">
+            	 <span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span>
+            	<span v-else><a href="login.html" title="点击登录">您好，请登录</a></span>
+                <a href="register.html" title="点击注册"> 免费注册 </a>
+            </div>
+            
+            <div class="person-info">
+				 <span>|</span> <a href="order.html" target="_blank">我的订单</a>
+				 <span>|</span> <a  href="login.html" target="_blank" @click="clearCookie()">退出登录</a> 
+				<span>|</span> <a href="myself.html" target="_blank">个人信息</a>
+			</div>
+        
+        </div>
+    </div>
+    <script type="text/javascript">
+var vue=new Vue({
+	el:".login-info",
+	data:{
+		loginedUser:{}
+	},
+	created:function(){
+		var url="UserServlet.do?op=GetLoginedUserServlet";
+		$.post(url,null,function(data){
+			if(data!="null"){
+				vue.$data.loginedUser=JSON.parse(data);
+			}
+		});
+	}
+});
+function clearCookie(){
+	var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+	if (keys) {
+	for (var i = keys.length; i--;)
+	document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+	}
+}
+</script> 
+    <!-- 顶部搜索区域 -->
+    <div class="search">
+    	<div class="search_left">
+    		<a href="index.html" title="首页">
+            	<img src="images/biglogo.jpg" width="260px" height="120px"/> 
+            </a>
+        </div>
+    </div>
+    <!-- 面包屑导航 --> 
+<div class="breadcrumb" id="breadcrumb">
+    <a href="javascript:void(0)">返回首页</a>
+    <span>&gt;</span>
+    <a href="javascript:void(0)" id="goods_type">我的购物车</a>
+    <span>&gt;</span>
+    <a href="javascript:void(0)">订单支付</a>
+ </div>
+</header>
+
+     
+<!-- 收货地址 -->
+<h3 class="common_title">我的收货地址</h3>
+<div id="app" class="common_list_con clearfix">
+    <input type="hidden" id="default_addr"/>
+    <input type="hidden" id="current_addr"/>
+    <dl id="addr_list">
+        <dt>寄送到：</dt>
+       <dd v-for="t in list" class="default_location">{{t.name}} {{t.tel}}  {{t.province}} {{t.city}} {{t.area}} {{t.addr}} 
+       		 <a href="javascript:void(0)" @click="defaultaddr(t.ano)">设为默认地址</a>
+			<a href="javascript:void(0)" @click="Canceladdr(t.ano)">取消默认地址</a>
+			
+			 
+			
+			
+        </dd>
+	</dl>
+	<a href="javascript:showAddrDiv()" class="edit_site">添加新地址</a>
+    <a href="javascript:showAddrDiv()" class="edit_site">添加新地址</a>
+</div>
+<script type="text/javascript">
+var vue3=new Vue({
+	el:"#app",
+	data:{
+		list:[],
+		
+		
+	},
+	created:function(){
+		axios({
+			url:"../QueryAddress.do",
+			params:{
+				
+			}
+		}).then(res=>{
+			this.list=res.data;
+			console.log(res.data);
+			/* alert(JSON.stringify(res.data)); */
+		});
+	},
+	methods:{
+		defaultaddr(ano){
+			axios({
+				url:"../AddressServlet.do?op=Set&ano="+ano,
+			}).then(res=>{
+				alert(res.data);
+			})
+		},
+		Canceladdr(ano){
+			axios({
+				url:"../AddressServlet.do?op=Cancel&ano="+ano,
+			}).then(res=>{
+				alert(res.data);
+			})
+		}
+	}
+});
+</script> 
+<div id="addr_div" onload="init()">
+    <img src="images/close.png" title="关闭" onclick="hiddenDiv()"/>
+    <form id="myform">
+        <ul>
+            <li>
+                <label for="addr_name">收货人：</label>
+                <input v-model="name" id="addr_name" name="name" type="text" placeholder="请输入收货人姓名..." />
+            </li>
+            <li>
+                <label for="addr_tel">联系方式：</label>
+                <input v-model="tel" id="addr_tel" name="tel" type="text" placeholder="请输入收货人联系方式..." />
+            </li>
+            <li>
+                <label>收货地址：</label>
+                <select v-model="province" id="sheng"  name ="sheng" @change="changeSheng()">
+                	<option  v-for="sheng in shengItems">{{sheng}}</option>
+                </select>
+                <select v-model="city" id="shi" name="shi" @change="changeShi()">
+                    <option  v-for="shi in shiItems">{{shi}}</option>
+                </select>
+                <select v-model="area" id="xian" name="xian">
+                    <option  v-for="xian in xianItems">{{xian}}</option>
+                </select>
+            </li>
+            <li>
+                <label for="addr_addr">详细地址：</label>
+                <input v-model="addr" id="addr_addr" name="addr" style='width: 480px;' type="text" placeholder="请输入详细地址（街道、门牌等）" />
+            </li>
+            <li class="addr_btn">
+                <a @click="addAddr()">添加收货地址</a>
+            </li>
+        </ul>
+    </form>
+</div>
+<script type="text/javascript">
+var vue2=new Vue({
+	el:"#addr_div",
+	data:{
+		shengItems:[],
+		shiItems:[],
+		xianItems:[],
+		name:"",
+		tel:"",
+		province:"",
+		city:"",
+		area:"",
+		addr:""
+	},
+	//事件函数
+	created:function(){
+		loadSheng();
+		loadShi();
+		loadXian();
+	},
+	methods:{
+		changeSheng(){
+			var sheng=document.getElementById("sheng");
+			loadShi(sheng.selectedIndex);
+			var shi=document.getElementById("shi");
+			loadXian(sheng.selectedIndex,shi.selectedIndex);//未完成
+		},
+		changeShi(){
+			//未完成
+			var sheng=document.getElementById("sheng");
+			var shi=document.getElementById("shi");
+			//console.log(sheng.selectedIndex+"111"+shi.selectedIndex)
+			loadXian(sheng.selectedIndex,shi.selectedIndex);
+		},
+		addAddr(){
+			axios({
+				url:"../UpdateAddress.do?op=AddAddress",
+				params:{
+					name:this.name,
+					tel:this.tel,
+					province:this.province,
+					city:this.city,
+					area:this.area,
+					addr:this.addr
+				},
+			}).then(res=>{
+				alert(res.data);
+				vue2.$data=res.data;
+				
+			});
+		}
+	}
+	
+});
+
+</script>
+
+<!-- 支付方式 -->	
+<h3 class="common_title">支付方式</h3>	
+<div class="common_list_con clearfix">
+    <div class="pay_style_con clearfix">
+        <input type="radio" name="pay_style" checked>
+        <label class="cash">货到付款</label>
+        <input type="radio" name="pay_style">
+        <label class="weixin">微信支付</label>
+        <input  type="radio" checked name="pay_style">
+        <label class="zhifubao"></label>
+        <input type="radio" name="pay_style">
+        <label class="bank">银行卡支付</label>
+    </div>
+</div>
+
+<div id="k">
+<!-- 商品列表 -->
+<h3 class="common_title">商品列表</h3>
+     
+<div class="common_list_con clearfix" id="order_list">
+    <ul class="goods_list_th clearfix">
+        <li class="col01">商品名称</li>
+        <li class="col02">商品单位</li>
+        <li class="col03">商品价格</li>
+        <li class="col04">数量</li>
+        <li class="col05">小计</li>		
+    </ul>
+    <ul v-for="oi in orderitem" class="goods_list_td clearfix">
+    
+        <li class="col01">{{oi[0].gno}}</li>			
+        <li class="col02"><img :src="oi[0].pics"></li>
+        <li class="col03">{{oi[0].gname}}</li>
+        <li class="col04">{{oi[0].weight}}</li>
+        <li class="col05">{{oi[0].price}}</li>
+        <li class="col06">{{oi[0].nums}}</li>
+        <li class="col07">{{oi[0].price*oi[0].nums}}</li>	
+    </ul>
+</div>
+<!-- 金额结算 -->	
+<h3 class="common_title">总金额结算</h3>
+<div  v-for="o in orderitems">
+<div class="common_list_con clearfix">
+    <div class="settle_con">
+        <div class="total_goods_count">共<em id="totalcount">{{o.totalnum}}</em>件商品，总金额<b id="total_price">{{o.b}}</b></div>
+        <div class="transit">运费：<b>10元</b></div>
+        <div class="total_pay">实付款：<b id="total_pay">{{o.totalprice+10}}</b></div>
+    </div>
+</div>
+
+<div  class="order_submit clearfix">
+    <a href="javascript:void(0);" id="order_btn" @click="order()">提交订单</a>
+</div>	
+</div>
+
+
+<div class="popup_con">
+    <div class="popup">
+        <p>订单提交成功，3秒后自动跳转到首页...</p>
+    </div>
+    <div class="mask"></div>
+</div>    
+</div>
+
+ <script type="text/javascript">
+        var vue1=new Vue({
+        	el:"#k",
+        	data:{
+        		orders:{},
+        		orderitem:[],
+        		orderitems:[],
+        		totalPrice:""
+        		
+        		
+        	},
+        	created: function(){
+        		var cnos=location.search.replace("?","").split(",");
+      			var that=this;
+        		console.log(cnos);
+        		 $.get('orders.do?op=query',{cnos:cnos},function(res){
+        			 that.orders=res["orders"];
+        			console.log(res["orderitem"]);
+    				that.orderitem=res["orderitem"];
+    				console.log(that.orderitem[0]);
+    				
+        			
+        		},'json'); 
+        		
+        		
+        		
+        	  /*  axios.get("orders.do?op=query").then(res=>{
+    				this.orders=res.data.orders;
+    				this.orderitem=res.data.orderitem;
+    				console.log(res.data);
+    			});  */
+        		axios.get("Pay.do?op=query").then(res=>{
+    				this.orders=res.data.orders;
+    				this.orderitems=res.data.orderitems;
+    				console.log(res);
+    				console.info(this.orderitems);
+    				this.totalPrice=this.orderitems[0].totalprice+10;
+    			});
+        	},
+        	methods:{
+        		/* order(){
+        			axios({
+        				 url:"", 
+        				 params:{
+        					
+        				 }
+        			}).then((res)=>{
+        				location.href="index.jsp";
+        			});	
+        		}, */
+        		order(){
+        			console.log(this.orderitem[0][0].ono);
+        			var ono=this.orderitem[0][0].ono;
+        			location.href="../index.jsp?"+ono+"&"+this.totalPrice;
+        			 axios({
+        				url:"Pay.do?op=udpatePayStatus",
+        			}).then((res)=>{
+        				alert(res.data);
+        			}) 
+        		}
+
+        	}
+        })
+</script>
+
+
+        
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/addr.js"></script>
+
+<script type="text/javascript">
+
+function showAddrDiv() {
+	$("#addr_div").css("display", "block");
+}
+
+function hiddenDiv() {
+	$("#addr_div").css("display", "none");
+}
+</script>
+</body>
+</html>

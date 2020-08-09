@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>源辰-零食网登录</title>
+<meta name="keywords" content="小吃,美食,零食,源辰" />
+<meta name="description" content="各种小吃美食，应有尽有" />
+<link href="images/yc.png" rel="shortcut icon" type="image/x-icon" />
+<link href="css/login.css" rel="stylesheet" type="text/css" />
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<script type="text/javascript" src="js/autologin.js"></script>
+<style>
+</style>
+</head>
+
+<body>
+	<header>
+		<a href="index.html" target="_blank"><img src="images/logo.png"
+			alt="logo" title="点击进入零食网" /></a>
+	</header>
+
+	<article>
+		<div class="loginarea">
+
+			<div class="item">
+				<h1>
+					源辰会员 <a href="register.html">立即注册</a>
+				</h1>
+			</div>
+
+			<div class="item item-border">
+				<label for="account" class="login_label"></label> <input
+					v-model="nickName" type="text" class="ipt" name="account"
+					id="account" placeholder="邮箱/用户名/已验证的手机" /> <span class="clear_btn"></span>
+			</div>
+
+			<div class="item item-border">
+				<label for="pwd" class="login_label pwd_label"></label> <input
+					v-model="pwd" type="password" maxlength="18" class="ipt" name="pwd"
+					id="pwd" placeholder="密码" /> <span class="clear_btn"></span>
+			</div>
+
+			<div class="item item2">
+				<input type="checkbox" id="auto" v-model="auto"  value="1" >
+				 <label name="autologin" for="auto">自动登录</label> <a href="#">忘记密码</a><br>
+				
+			</div>
+
+			<div class="item ">
+				<input id="submitBtn" @click="login()" type="button" class="btn_img"
+					value="登录">
+			</div>
+			<div class="citem">
+			<div class="item item3">
+				<ul>
+					<li><a href="#"><span></span>QQ</a></li>
+					<li><span></span></li>
+					<li><a href="#"><span></span>微信</a></li>
+					
+				</ul>
+			</div>
+			
+			<div class="cal">
+				<li><a href="#" @click="cancel()">取消自动登录</a></li>
+			</div>
+			</div>
+		</div>
+	</article>
+
+<script type="text/javascript">
+var vue=new Vue({
+	el:".loginarea",
+	data:{
+		nickName:"",
+		pwd:"",
+		auto:0
+	},
+	created:function(){
+		var username=getCookie("pu");
+		var userpwd=getCookie("pd");
+		var userauto=getCookie("pa");
+		console.info("pu:"+username);
+		console.info("pd:"+userpwd);
+		console.info("pa:"+userauto);
+		this.auto=userauto; 
+		if(this.auto==1){
+			this.nickName=username;
+			this.pwd=userpwd;
+			console.info(this.nickName);
+			console.info(this.pwd);
+			setTimeout("location.href='index.html'",3000);
+			
+		}
+		
+	},
+	methods:{
+		login(){
+			var name=document.getElementById("account").value;
+			var pwd=document.getElementById("pwd").value;
+			var Auto=document.getElementById("auto").value;
+			axios({
+				url:"../LoginServlet.do?op=Login",
+				params:{
+					nickName:name,
+					pwd:pwd
+				}
+			}).then(res=>{
+				if(res.data=='登录成功'){
+					var user=name;
+					var upwd=pwd; 
+					var uauto=Auto;
+					document.cookie="pu="+user+";max-age=36000";
+					document.cookie="pd="+upwd+";max-age=36000";
+					document.cookie="pa="+uauto+";max-age=36000";
+					alert(upwd);
+					alert(uauto);
+					location.href="index.html";
+				}
+			});
+			
+		},
+		cancel(){
+			clearCookie("pu");
+			clearCookie("pd");
+			clearCookie("pa");
+			location.href="login2.html";
+		}
+
+	}
+
+});
+
+function getCookie(cookieName){
+    cookieName += "=";
+    var cookieList = document.cookie.split(";");
+    for(var i= 0; i< cookieList.length; i++){
+        var cookieItem = cookieList[i].trim();
+        console.info(cookieItem);
+        if(cookieItem.indexOf(cookieName) != -1){
+        	 console.info("===="+cookieItem.indexOf(cookieName));
+        	 console.info("121==="+cookieItem.substring(cookieName.length, cookieItem.length));
+        	 console.info("===="+cookieName);
+            return cookieItem.substring(cookieName.length, cookieItem.length);
+            
+        }
+    }
+    console.info("123=="+cookieItem.substring(cookieName.length, cookieItem.length));
+    return '';
+}
+
+function clearCookie(){
+	var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+	if (keys) {
+	for (var i = keys.length; i--;)
+	document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+	}
+}
+</script>
+	<footer>
+		<div class="foot_link">
+			<a href="#">关于我们</a> <span> | </span> <a href="#">联系我们</a> <span>
+				| </span> <a href="#">招聘广告</a> <span> | </span> <a href="#">友情链接</a>
+		</div>
+		<p>
+			CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com"
+				target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd
+		</p>
+		<p>电话：0734-8355998 湘ICP备16015987号-1</p>
+	</footer>
+</body>
+</html>

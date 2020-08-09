@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/dre.css"/>
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<!-- <script type="text/javascript" src="js/main.js"></script> -->
+ <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script> 
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+
+<title>个人信息</title>
+<script type="text/javascript">
+  function doclick( ){
+	   var docs = document.getElementById('url');
+	  var docs1 = document.getElementById('url1');
+	  var docs2 = document.getElementById('url2');
+	  var docs3 = document.getElementById('url3');
+	  docs.disabled = false;
+	  docs1.disabled = false;
+	  docs2.disabled = false;
+	  docs3.disabled = false;  
+	 
+	 
+	 
+  }
+  
+  
+</script>
+</head>
+<style>
+	.help-main p {
+		line-height: 50px;
+	}
+</style>
+<body>
+<div class="top" id="item4">
+	<div class="container clearfix">
+		<ul class="clearfix fr">
+			<li><a href="join.html#tologin" >登录</a></li>
+			<li><a href="join.html#toregister" >注册</a></li>
+			<li><a href="member.html" style="border: none">个人中心</a></li>
+		</ul>
+	</div>
+</div>
+
+
+
+<div class="help-wrap">
+	<div class="container clearfix">
+		<div class="bread">当前位置：
+			<a href="index.html">首页</a> >
+			<a href="myself.html">个人中心</a> >
+			<a href="myself.html">个人信息</a>
+		</div>
+		<div class="help-l fl">
+			<div class="help-item">
+				<div class="help-item-title">个人中心
+					<a href="javascript:void(0)" class="abs"></a>
+				</div>
+				<div class="help-item-list">
+					<ul>
+						<li><a href="myself.html">个人信息</a></li>
+						<li><a href="pwd.html">修改密码</a></li>
+						<li><a href="order.html">我的订单</a></li>
+						<li><a href="cart.html">我的购物车</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="app" class="help-r fr">
+			<div class="help-item-title">个人信息</div>
+			<div class="help-main">
+				<form v-for="p in list" >
+					<p><span class="nice">用户名：</span><input id="url"  type="text"  v-model="p.pname"  disabled="disabled"></p>   <!-- <img :src="p.himage"  width="20px" height="20px"> -->
+					<p><span class="nice">昵称：</span><input id="url1"   type="text"    v-model="p.pnname"  disabled="disabled"></p>
+					<p><span class="nice">性别：</span><input id="url2" type="text"    v-model="p.sex"  disabled="disabled"></p>
+					<p><span class="nice">所在地区：</span><input id="url3" type="text"   v-model="p.area"  disabled="disabled"></p>
+					 <!-- <a href="edit.html"  >编辑</a> -->
+					 <input id="ei" class="edit" type="button" value="编辑"  onclick="doclick()" />
+					 <input class="save" type="button" value="保存"  @click="save()"/> 
+					 
+				</form>
+			</div>
+		</div>
+		<script type="text/javascript">
+		var vue = new Vue({
+			el:"#app",
+			data:{
+				pname:"",
+				pnname:"",
+				sex:"",
+				area:"",
+				list:[ ]
+			},
+			created:function( ){
+			
+			axios({
+				url:"QueryMyselfServlet",
+				params:{
+				 	
+				}
+			}).then( res=>{
+				this.list = res.data;
+				});
+			}, 
+		methods:{
+			save( ){
+				axios({
+					url:"SaveMyselfServlet",
+					params:{
+						pname:this.pname,
+						pnname:this.pnname,
+						sex:this.sex,
+						area:this.area
+					}
+				}).then(res =>{
+					alert(res.data);
+				});
+			}
+		}
+	});
+		</script>
+	</div>
+</div>
+
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+</body>
+</html>

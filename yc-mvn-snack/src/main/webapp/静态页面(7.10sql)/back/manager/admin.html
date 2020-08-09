@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/main.css">
+<script type="text/javascript" src="../../js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="../../js/vue.min.js"></script>
+<script type="text/javascript" src="../../js/axios.min.js""></script>
+</head>
+<body>
+<script type="text/javascript">
+function del(aid){
+	//id=document.getElementById("id");
+	//alert(id);
+	var msg="确定要删除该管理员信息吗？";
+	if(confirm(msg)+aid){
+		location.href="../../../Admin.do?op=DeleteAdmin&aid="+aid;
+	}else{
+		return false;
+	}
+}
+
+</script>
+<div  id="app">
+<div id="forms" class="mt10">
+	<div class="box">
+		<div class="box_border">
+			<div class="box_center">
+				<form id="myform">
+				姓名：<input v-model="aname" type="text" id="tname" class="input-text lh30" size="40"/>&nbsp;&nbsp;
+				密码：<input v-model="pwd" type="password" id="pwd" class="input-text lh30" size="40"/>&nbsp;&nbsp;<br>
+				手机号码：<input v-model="tel" type="tel" id="tel"class="input-text lh30" size="40"/>&nbsp;&nbsp;
+				<input type="button" name="button" class="btn btn82 btn_save2" @click="addadmin()" value="添加"/>&nbsp;&nbsp;
+				
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="table" class="mt10">
+	<div class="box span10 oh">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_table" >
+			<thead>
+				<tr>
+					<th width="20%">编号</th>
+                   	<th width="20%">姓名</th>
+                   	<th width="25%">联系方式</th>
+                   	<th width="20%">状态</th>
+                   	<th>操作</th>
+                </tr>
+                
+                <tr v-for="admin in list" align="center">
+					<td>{{admin.aid}}</td>
+					<td>{{admin.aname}}</td>
+					<td>{{admin.tel}}</td>
+					<td><select id="ss" @change="load(admin.aid,admin.status)"  class="select" v-model="admin.status" name="status">
+						<option selected>{{admin.status}}</option>
+						<option v-if="admin.status=='正常'">冻结</option>
+						<option v-if="admin.status=='冻结'">正常</option>
+					</select></td>
+					<td><button  type="button" @click="del(admin.aid)">删除</button></td>
+				</tr>
+            </thead>
+		</table>
+	</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+var vue=new Vue({
+	el:"#app",
+	data:{
+		list:[],
+		aname:"",
+		pwd:"",
+		tel:"",
+		status:"",
+		aid:""
+		
+	},
+	created:function(){
+		this.query();
+	},
+	methods:{
+		query(){
+			//兰姆达表达式写法  =>箭头函数
+			axios({
+				method:'post',
+				url:"../../../Admin.do?op=QueryAdmin",
+				params:{
+					 aname:this.aname,
+					 tel:this.tel,
+					 status:this.status
+				}
+			}).then((res)=>{
+				this.list=res.data;
+			});
+		},
+		addadmin(){
+			axios({
+				method:'post',
+				url:"../../../Admin.do?op=AddAdmin",
+				params:{
+					aname:this.aname,
+					pwd:this.pwd,
+					tel:this.tel
+				}
+			}).then((res)=>{
+				alert(res.data);
+				this.list=res.data;
+				
+			});
+			
+		},
+		load(aid,status){
+			//alert(this.mno);
+			axios({
+				method:"post",
+				url:"../../../Admin.do?op=UpdateAdmin",
+				params:{
+					status:status,
+					aid:aid
+				},
+			}).then((res)=>{
+			/* 	this.list=res.data; */
+			});
+		},
+	}
+});
+
+</script>
+
+</body>
+</html>

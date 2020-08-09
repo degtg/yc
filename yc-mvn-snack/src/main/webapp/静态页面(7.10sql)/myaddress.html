@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/dre.css"/>
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+
+<script type="text/javascript" src="js/vue.min.js"></script>
+
+<script type="text/javascript" src="js/axios.min.js"></script>
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/省市.js"></script>
+<title>修改密码</title>
+<style type="text/css">
+select{
+	width:100px
+}
+</style>
+<style type="text/css">
+			body{
+				margin: 0px;
+			}
+			.zhezhao{
+				position: fixed;
+				left: 0px;
+				top: 0px;
+				background: #000;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,0.5);
+			}
+			.tankuang{
+				position: relative;
+				background: #fff;
+				width: 70%;
+				height: 60%;
+				border-radius: 5px;
+				margin: 5% auto;
+			}
+			#header{
+				height: 40px;
+			}
+			#header-right{
+				position: absolute;
+				width: 25px;
+				height: 25px;
+				border-radius: 5px;
+				background: red;
+				color: #fff;
+				right: 5px;
+				top: 5px;
+				text-align: center;
+			}
+		</style>
+		<script type="text/javascript">
+function init(){
+	var s=document.getElementById("sheng");
+	for(var i=0;i<provinces.length;i++){
+		var option=document.createElement("option");
+		option.innerText=provinces[i];
+		s.appendChild(option);
+	}
+	changeSheng();
+	
+}
+function changeSheng(){
+	var s=document.getElementById("sheng");
+	var index=s.selectedIndex;
+	var sh=document.getElementById("shi");
+	sh.innerHTML="";
+	for(var i=0;i<citys[index].length;i++){
+		var option=document.createElement("option");
+		option.innerText=citys[index][i];
+		sh.appendChild(option);
+	}
+	changeShi();
+}
+function changeShi(){
+	var s=document.getElementById("sheng");
+	var index1=s.selectedIndex;
+	var sh=document.getElementById("shi");
+	var index2=sh.selectedIndex;
+	var xian=document.getElementById("xian");
+	xian.innerHTML="";
+	for(var i=0;i< countys[index1][index2].length;i++){
+		var option=document.createElement("option");
+		option.innerText=countys[index1][index2][i];
+		xian.appendChild(option);
+	}
+	
+}
+</script>
+</head>
+<style>
+	.help-main p {
+		line-height: 50px;
+	}
+</style>
+<body onload="init()">
+<div class="top" id="item4">
+	<div class="container clearfix">
+		<ul class="clearfix fr">
+			<li><a href="join.html#tologin" >登录</a></li>
+			<li><a href="join.html#toregister" >注册</a></li>
+			<li><a href="myself.html" style="border: none">个人中心</a></li>
+		</ul>
+	</div>
+</div>
+
+
+
+<div  id="app" class="help-wrap">
+	<div class="container clearfix">
+		<div class="bread">当前位置：
+			<a href="index.html">首页</a> >
+			<a href="myself.html">个人中心</a> >
+			<a href="myself.html">修改密码</a>
+		</div>
+		<div class="help-l fl">
+			<div class="help-item">
+				<div class="help-item-title">个人中心
+					<a href="javascript:void(0)" class="abs"></a>
+				</div>
+				<div class="help-item-list">
+					<ul>
+						<li><a href="myself.html">个人信息</a></li>
+						<li><a href="password.html">修改密码</a></li>
+						<li><a href="order.html">我的订单</a></li>
+						<li><a href="cart.html">我的购物车</a></li>
+						<li><a href="#">我的收货地址</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="help-r fr">
+			<div class="help-item-title">我的收货地址 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+			 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+			 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+			 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+			 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+			 <button type="button" onclick="dianwo()">新增地址</button>
+			 <div class="zhezhao" id='zhezhao'>
+			<div class="tankuang">
+				<div id="header">
+				<br>
+					<p><span class="nice"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;用户名：</span> <input id="url"  type="text"  v-model="addrs.name" ></p>   
+					<p><span class="nice"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;电话：</span>  <input id="url2" type="text"    v-model="addrs.tel" ></p>
+					<p><span class="nice"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+					所在地区： 省:<select id="sheng" v-model="addrs.province" onchange="changeSheng()"></select>
+							市:<select id="shi" v-model="addrs.city" onchange="changeShi()"></select>
+							县:<select id="xian" v-model="addrs.area" ></select></span>
+					<p><span class="nice"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;详细地址：</span> <input id="url3" type="text"   v-model="addrs.addr" ></p>
+					 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+					 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+					 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+					 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+					 <button @click="addAddr()">保存</button>
+					 <button onclick="hidder()" >取消</button>
+					 <div id="header-right" onclick="hidder()"><img  src="images/close.png"></div> 
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			document.getElementById('zhezhao').style.display="none";
+			function dianwo(){
+				document.getElementById('zhezhao').style.display="";
+			}
+			function hidder(){
+				document.getElementById('zhezhao').style.display="none";
+			}
+		</script>
+			<div  class="help-main">
+				<form action="" v-for="t in list">
+					<p><span >收货人姓名：{{t.name}} </span>
+						<span>收货人电话：{{t.tel}}</span>
+						<span>{{t.province}}</span> <span>{{t.city}}</span> <span>{{t.area}}</span> <span>{{t.addr}}</span>
+						<!-- <input  class="save" type="submit" value="确认修改"/> -->
+						&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;<button  style="background-color: pitch-range: cue: "  @click="delAddr(t.ano)">删除地址</button>
+						
+						
+					 </p>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+var vue=new Vue({
+	el:"#app",
+	data:{
+		list:[],
+		addrs:{
+			name:"",
+			tel:"",
+			province:"",
+			city:"",
+			area:"",
+			addr:""
+		}
+		
+		
+	},
+	created:function(){
+		axios({
+			url:"../QueryAddress.do",
+			params:{
+				
+			}
+		}).then(res=>{
+			this.list=res.data;
+			console.log(res.data);
+			/* alert(JSON.stringify(res.data)); */
+		});
+		
+	},
+	methods:{
+		save( ){
+			axios({
+				url:"Myself.do?op=Save",
+				params:{
+					pname:this.pname,
+					pnname:this.pnname,
+					sex:this.sex,
+					area:this.area
+				}
+			}).then(res =>{
+				alert(res.data);
+			});
+		},
+		addAddr(){
+			axios({
+				url:"../UpdateAddress.do?op=AddAddress",
+				params:this.addrs,
+			}).then(res=>{
+				alert(res.data);
+				this.addrs=rea.data[0];
+				
+				
+			});
+		},
+		delAddr(ano){
+			axios({
+				url:"../UpdateAddress.do?op=deladdr&ano="+ano,
+			}).then(res=>{
+				alert(res.data.text);
+				//setTimeout(function(){location.reload()},1000);
+				
+			});
+		}
+	}
+	
+
+});
+</script>
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+</body>
+</html>

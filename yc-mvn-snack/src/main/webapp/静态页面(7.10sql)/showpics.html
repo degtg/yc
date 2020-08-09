@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>508+1-零食网</title>
+<meta name="keywords" content="小吃,美食,零食,源辰" />
+<meta name="description" content="各种小吃美食，应有尽有" />
+<link href="images/yc.png" rel="shortcut icon" type="image/x-icon" />
+<link href="css/header.css" rel="stylesheet" type="text/css" />
+<link href="css/index.css" rel="stylesheet" type="text/css" />
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<script type="text/javascript" src="js/ajax.js"></script>
+</head>
+
+<body>
+	<!-- 顶部区域 -->
+	<div id="goods">
+		<header id="header"><!-- <base target="_self"> -->
+			<!-- 顶部标题区域 -->
+			<div class="htitle">
+				<a href="#" target="_blank" class="location">衡阳</a>
+				<div class="header-info">
+					<div class="login-info">
+						<span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span>
+						<span v-else><a href="login.html" title="点击登录">您好，请登录</a></span> <a
+							href="register.html" title="点击注册"> 免费注册 </a>
+					</div>
+
+					<div class="person-info">
+						<span>|</span> <a href="order.html" target="_blank">我的订单</a>
+						<span>|</span> <a  href="login.html" target="_blank" @click="clearCookie()">退出登录</a> 
+						<span>|</span> <a href="myself.html" target="_blank">个人信息</a>
+					</div>
+
+				</div>
+			</div>
+			<script type="text/javascript">
+				var vue=new Vue({
+					el:".login-info",
+					data:{
+						loginedUser:{}
+					},
+					created:function(){
+						var url="UserServlet.do?op=GetLoginedUserServlet";
+						$.post(url,null,function(data){
+							if(data!="null"){
+								vue.$data.loginedUser=JSON.parse(data);
+							}
+						});	
+						//location.href="index.html";
+					},
+				});
+				function clearCookie(){
+					var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+					if (keys) {
+					for (var i = keys.length; i--;)
+					document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+					}
+				}
+			</script>
+
+			<!-- 顶部搜索区域 -->
+			<div id="s" class="search">
+				<div class="search_left">
+					<a href="index.html" title="首页"> <img src="images/biglogo.jpg"
+						width="260px" height="120px" />
+					</a>
+				</div>
+
+				<div class="search_right">
+					<div class="search_top">
+						<div class="search_div">
+						 <input v-model="content" type="search" class="search-ipt" placeholder="请输入要搜索的内容" />
+                   		 <input @click="querycomment()" type="button" class="search-btn"/>  
+						</div>
+
+						<div id="n" class="buycart">
+							<i class="iconfont">{{goods}}</i> <a href="cart.html"
+								target="_blank">我的购物车</a>
+						</div>
+					</div>
+
+					<div class="search_item" id="search_item"  >
+            		<a href="#"  class="selected" >全部</a>
+            		<a v-for="t in typelist"  :href=" 'clist.html#'+t.tno" class="nuts" >{{t.tname}}</a>
+        			</div>
+				</div>
+			</div>
+
+		</header>
+
+		
+		<article>
+			<div class="view_title1">
+				<div class="person-info">
+					<span>|</span> <a  target="_blank"  >买家秀</a>
+					<span>>></span> <a  target="_blank" >真实晒图</a>
+					<span>>></span> <a  target="_blank" >真实评价</a>
+				</div>
+
+			</div>
+
+			<div class="view_goods">
+				<ul v-for="c in cheaplist" id="view_goods">
+					<li class="hot_box"><i class="all_i i_t"></i> <i
+						class="all_i i_r"></i> <i class="all_i i_b"></i> <i
+						class="all_i i_l"></i> <a :href="'detail.html?#'+c.gno"
+						target="_blank" class="hot_warp"> <img :src="c.picture1"
+							title="好吃" /> <span>{{c.content}}</span>
+					</a>
+						<div class="view_info">
+							<!-- <span class="buy" @click="addCart(c.gno)">&nbsp;</span> -->
+							<span><img :id="'img_'+c.gno" class="like" src="images/like1.jpg" onclick='onoff(this)'></span>
+						</div></li>
+				</ul>
+			</div>
+			
+
+			<div class="page_info">
+				<button  class="active" @click="query(0)" >首页</button>
+				<button  class="active" @click="query(-1)">上页</button>
+				<button  class="active"@click="query(1)">下页</button>
+				<button  class="active" @click="query(-2)">尾页</button>
+			</div> 
+
+		</article>
+		<div class="popup_con">
+			<div class="popup">
+				<p id="popup_info"></p>
+			</div>
+		</div>
+	</div>
+
+	<footer>
+		<div class="foot_link">
+			<a href="#">关于我们</a> <span> | </span> <a href="#">联系我们</a> <span>
+				| </span> <a href="#">招聘广告</a> <span> | </span> <a href="#">友情链接</a>
+		</div>
+		<p>
+			CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com"
+				target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd
+		</p>
+		<p>电话：0734-8355998 湘ICP备16015987号-1</p>
+	</footer>
+	<script src="js/jquery-3.4.1.min.js" type="text/javascript"></script>
+	<script src="js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="js/slide.js" type="text/javascript"></script>
+	<script src="js/index.js" type="text/javascript"></script>
+	
+<script type="text/javascript">
+	function onoff(i){
+		//var i=document.getElementById("img");
+		if( i.src.indexOf("images/like1.jpg")>-1){
+			i.src="images/like2.jpg";
+		}else{
+			i.src="images/like1.jpg";
+		}
+		//setTimeout(onoff,1000);
+		
+		//让灯自动开关，函数名可以当成变量来使用
+		//setTimeout 是BOM 模型中个window 的函数，表示在超过某个时间后 ，执行的动作
+		
+	}
+</script>
+	
+	<script type="text/javascript">
+	var vue=new Vue({
+    	el:"#goods",
+    	data:{
+    		hotList:[],
+    		page:1,
+    		pages:999,
+    		goods:"",
+    		gname:"",
+    		goods:[],
+    		typelist:[],
+    		cheaplist:[],
+    		content:""
+    		
+    	},
+    	
+    	methods:{
+    		querycomment(){
+    			axios({
+    				url:"../Querycomment.do",
+    				params:{
+    					content:this.content
+    				},
+    				
+    			}).then(res=>{
+    				vue.$data.cheaplist=res.data;
+    			});
+    		},
+    		query(type){
+    			switch(type){
+    			case 0:
+    				this.page=1;
+    				break;
+    			case -1:
+    				this.page -=1;
+    				break;
+    			case 1:
+    				this.page +=1;
+    				break;
+    			case -2:
+    				this.page =this.pages;
+    				break;
+    			
+    			}
+    			if(this.page<=0){
+    				this.page=1;
+    			}
+    			else if(this.page>=this.pages){
+    				   this.page=this.pages;
+    			}
+    			
+    			axios({
+    				url:"../QueryPages.do",
+    				params:{
+    					page:this.page,
+    				   
+    				}
+    				//function(res){}简写
+    			}).then((res)=>{
+    				this.hotList=res.data.list;
+    				this.pages=res.data.pages;
+    			});	
+    		},
+    		addCart(gno){
+    			axios.get("cart.do?op=addcart&gno="+gno).then(res=>{
+    				//this.goods=res.data;
+    				//console.log(res);
+    				alert(res.data);
+    				location.href="index.html";
+    				//location.href="#";
+    			});
+    			
+    			
+    			
+    		},
+    	},
+    	created:function(){
+   		  axios.all([queryAll(),queryCart()]).then(axios.spread((g1,g2)=>{
+   			this.cheaplist=g1.data;
+   			this.goods=g2.data[0].b;
+   			//this.goods=g2.data;
+   		}));
+   		axios.get("../QueryTypes.do").then(res=>{
+			this.typelist=res.data;
+			console.info(res.data);
+		});
+   		//this.query(0);
+   	},
+    	
+    })
+	/* function QueryPage(){
+		return axios.get("../QueryPages.do");
+	}  */
+	function queryAll(){
+		return axios.get("../PersonShow.do?op=Show");
+	}
+	function queryHot(){
+		return axios.get("product.do?op=queryHot");
+	}
+	function queryCart(){
+		return axios.get("cart.do?op=queryNum");
+	}
+	</script>
+
+
+</body>
+</html>

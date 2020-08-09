@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/dre2.css"/>
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+<title>个人信息</title>
+<script type="text/javascript">
+  function doclick( ){
+	   var docs = document.getElementById('url');
+	  var docs1 = document.getElementById('url1');
+	  var docs2 = document.getElementById('url2');
+	  var docs3 = document.getElementById('url3');
+	  docs.disabled = false;
+	  docs1.disabled = false;
+	  docs2.disabled = false;
+	  docs3.disabled = false;  
+  }
+  
+  
+</script>
+</head>
+<style>
+	.help-main p {
+		line-height: 50px;
+	}
+</style>
+<body>
+<div class="top" id="item4">
+	<div class="container clearfix">
+		<ul class="clearfix fr">
+			<li><span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span></li>	
+		<li><span v-else><a href="login.html" title="点击登录">您好，请登录</a></span> </li>
+			<li><a href="login.html" >登录</a></li>
+			<li><a href="login.html" target="_blank" @click="clearCookie()">退出登录</a> </li>
+		
+		</ul>
+	</div>
+</div>
+<script type="text/javascript">
+				var vue=new Vue({
+					el:"#item4",
+					data:{
+						loginedUser:{}
+					},
+					created:function(){
+						var url="UserServlet.do?op=GetLoginedUserServlet";
+						$.post(url,null,function(data){
+							if(data!="null"){
+								vue.$data.loginedUser=JSON.parse(data);
+							}
+						});	
+						//location.href="index.html";
+					},
+				});
+				function clearCookie(){
+					var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+					if (keys) {
+					for (var i = keys.length; i--;)
+					document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+					}
+				}
+			</script>
+
+
+<div class="help-wrap">
+	<div class="container clearfix">
+		<div class="bread">当前位置：
+			<a href="index.html">首页>></a> 
+			<a href="myself.html">个人中心>></a> 
+			<a href="myself.html">个人信息</a>
+		</div>
+		<div class="help-l fl">
+			<div class="help-item">
+				<div class="help-item-title">个人中心
+					<a href="javascript:void(0)" class="abs"></a>
+				</div>
+				<div class="help-item-list">
+					<ul>
+						<li><a href="myself.html">个人信息</a></li>
+						<li><a href="pwd.html">修改密码</a></li>
+						<li><a href="order.html">我的订单</a></li>
+						<li><a href="myfoot.html">我的足迹</a></li>
+						<li><a href="cart.html">我的购物车</a></li>
+						<li><a href="myaddress.html">我的收货地址</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="app" class="help-r fr">
+			<div class="help-item-title">个人信息</div>
+			<div class="help-main">
+				<ul >
+				<div style="float:left;">
+				<form action="" v-for="l in list1" id="f3" style="position: relative;bottom:10px ">
+					<img  :src="l.photo" onclick="img.click()" style="height:100px; width:100px;  margin-left:80px" id=head><br>
+					<div style="display:none;">
+					<input name="file" type="file" id="img"><br>
+					</div>
+					<button type="button" onclick="upload2()" style="margin-left:80px">更换头像</button>
+				</form>
+				
+				<form  >
+					<p><span class="nice">用户名：</span><input id="url"  type="text"  v-model="p.realName"  disabled="disabled"></p>   <!-- <img :src="p.himage"  width="20px" height="20px"> -->
+					<p><span class="nice">昵称：</span><input id="url1"   type="text"    v-model="p.nickName"  disabled="disabled"></p>
+					<p><span class="nice">性别：</span><input id="url2" type="text"    v-model="p.sex"  disabled="disabled"></p>
+					<p><span class="nice">所在地区：</span><input id="url3" type="text"   v-model="p.area"  disabled="disabled"></p>
+					 <!-- <a href="edit.html"  >编辑</a> -->
+					 <input id="ei" class="edit" type="button" value="编辑"  onclick="doclick()" />
+					 <input class="save" type="button" value="保存"  @click="save()"/> 
+					 
+				</form>
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var vue=new Vue({
+		el:".help-main",
+		data:{
+			
+			list:[],
+			list1:[],
+			p:{realName:"",
+			nickName:"",
+			sex:"",
+			area:"",}
+		},
+		created:function(){
+			axios.get("../HeadServlet.do").then(res=>{
+				this.list1=res.data;
+				console.info(res.data);
+			});
+			axios({
+				url:"Myself.do?op=QueryMyself",
+				params:{
+				 	
+				}
+			}).then( res=>{
+				this.list = res.data;
+				this.p=res.data[0];
+			});
+			
+		},
+		methods:{
+			save( ){
+				axios({
+					url:"Myself.do?op=Save",
+					params:this.p
+				}).then(res =>{
+					alert(res.data);
+					location.href="myself.html";
+				});
+			}
+		}
+		
+
+	});
+function upload2(){
+		var url="../UploadImg.s";
+		//ajax 文件上传必须使用FormData 对象，用于封装form 表单元素
+		var param=new FormData(f3);
+		post(url,param,function(text){
+			/* alert(text); */
+			//将服务器的绝对路径转为浏览器的绝对路径
+			 head.src="/snack"+text; 
+			location.href="myself.html";
+		});
+	}
+</script>
+<footer>
+	<div class="foot_link">
+        <a href="#">关于我们</a> <span> | </span>
+        <a href="#">联系我们</a> <span> | </span>
+        <a href="#">招聘广告</a> <span> | </span>
+        <a href="#">友情链接</a>
+    </div>
+    <p>CopyRight &copy; 2019 <a class="copy" href="http://www.hyycinfo.com" target="_blank">衡阳市源辰信息科技有限公司</a> All Rights Reserverd</p>
+    <p>电话：0734-8355998 湘ICP备16015987号-1</p>
+</footer>
+</body>
+</html>

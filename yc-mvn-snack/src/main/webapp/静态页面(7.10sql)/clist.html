@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>零食网</title>
+<meta name="keywords" content="小吃,美食,零食,源辰" />
+<meta name="description" content="各种小吃美食，应有尽有" />
+<link rel="stylesheet" type="text/css" href="cst/reset.css">
+<link rel="stylesheet" type="text/css" href="cst/main.css">
+<link href="images/yc.png" rel="shortcut icon" type="image/x-icon" />
+<link href="cst/header.css" rel="stylesheet" type="text/css" />
+<link href="cst/index.css" rel="stylesheet" type="text/css" />
+<link href="css/footer.css" rel="stylesheet" type="text/css" />
+<link href="ccss/common.css" rel="stylesheet" type="text/css" />
+<link href="ccss/product.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+</head>
+<body>
+	<header id="header">
+		<!-- 顶部标题区域 -->
+		<div class="htitle">
+			<a href="#" target="_blank" class="location">衡阳</a>
+
+			<div  id="info" class="header-info">
+				<div class="login-info">
+					<span v-if="loginedUser.nickName">欢迎{{loginedUser.nickName}}</span>
+					<span v-else><a href="login.html" title="点击登录">您好，请登录</a></span> <a
+						href="register.html" title="点击注册"> 免费注册 </a>
+				</div>
+
+				<div class="person-info">
+					<span>|</span> <a href="order.html" target="_blank">我的订单</a> 
+					<span>|</span> <a  href="login.html" target="_blank" @click="clearCookie()">退出登录</a>  
+					<span>|</span> <a href="myself.html" target="_blank">个人信息</a>
+						
+				</div>
+
+			</div>
+		</div>
+
+		<script type="text/javascript">
+				var vue=new Vue({
+					el:"#info",
+					data:{
+						loginedUser:{}
+					},
+					created:function(){
+						var url="UserServlet.do?op=GetLoginedUserServlet";
+						$.post(url,null,function(data){
+							if(data!="null"){
+								vue.$data.loginedUser=JSON.parse(data);
+							}
+						});	
+						//location.href="index.html";
+					},
+				});
+				function clearCookie(){
+					var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+					if (keys) {
+					for (var i = keys.length; i--;)
+					document.cookie=keys[i]+'=0;expires=' + new Date( 0).toUTCString()
+					}
+				}
+			</script>
+		<!-- 顶部搜索区域 -->
+		<div class="search">
+			<div class="search_left">
+				<a href="index.html" title="首页"> <img src="images/biglogo.jpg"
+					width="260px" height="120px" />
+				</a>
+			</div>
+
+			<div class="search_right">
+				<div class="search_top">
+					<div class="search_div">
+						<input v-model="gname" type="search" class="search-ipt" placeholder="请输入要搜索的内容" />
+                    	<input @click="queryGoods()" type="button" class="search-btn"/>  
+						</div>
+					<div class="buycart">
+						<i class="iconfont">{{goods}}</i> <a href="cart.html" target="_blank">我的购物车</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部分类</h1>
+
+			</div>
+			
+
+			<ul class="navlist fl">
+				<li><a href="index.html">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="index.html">综合</a></li>
+				<li class="interval">|</li>
+				<li><a href="">销量</a></li>
+			</ul>
+		</div>
+
+	</div>
+
+	 <script type="text/javascript">
+            var vue3=new Vue({
+            	el:".search_right",
+            	data:{
+            		gname:"",
+            		goods:"",
+            	},
+            	methods:{
+            		queryGoods(){
+            			axios({
+            				url:"../Query.do",
+            				params:{
+            					gname:this.gname
+            				},
+            				
+            			}).then(res=>{
+            				vue2.$data.list=res.data;
+            			});
+            		}
+            	},
+            	 created:function(){
+                 	axios.get("cart.do?op=queryNum").then(res=>{
+                 		this.goods=res.data[0].b
+             		});
+                 }
+            });
+           
+            </script>
+	<div id="dclass" class="breadcrumb">
+		<a href="#"></a>
+	</div>
+
+	<div class="new_goods">
+		<ul id="u3" v-for="t in typelist">
+			<li><a class="nuts" @click="Qtype(t.tno)">{{t.tname}}</a></li>
+		</ul>
+	</div>
+	
+	<script type="text/javascript">
+				var vue1=new Vue({
+					el:".new_goods",
+					data:{
+						tno:"",
+						typelist:[]
+					},
+					created:function(){
+						/* this.Qtype(101) */
+						axios.get("../QueryType.do").then(res=>{
+	            			this.typelist=res.data;
+	            			console.info(res.data);
+	            		});
+					},
+					methods:{
+						Qtype(num){
+							axios({
+								method:"post",
+								url:"../QueryList.do",
+								params:{
+									tno:num
+								},
+							}).then((res)=>{
+								vue2.$data.list=res.data;
+								vue1.$data.list=res.data;
+							});
+						},
+					},
+					
+				});
+			
+			</script>
+	<article>
+
+		<div class="view_goods">
+			<ul id="view_goods">
+				<li class="hot_box" v-for="t in list"><i class="all_i i_t"></i>
+					<i class="all_i i_r"></i> <i class="all_i i_b"></i> <i
+					class="all_i i_l"></i> <a :href=" 'detail.html?#'+t.gno"
+					target="_blank" class="hot_warp"> <img :src="t.pics" title="好吃" />
+						<span>{{t.gname}}</span>
+				</a>
+					<div class="view_info">
+						<span class="price">{{t.price}}</span> <span>/{{t.weight}}</span>
+						<span class="buy" @click="addCart(t.gno)">&nbsp;</span>
+					</div>
+					
+				</li>
+
+			</ul>
+		</div>
+
+	</article>
+	<script type="text/javascript">
+
+var vue2=new Vue({
+	el:".view_goods",
+	data:{
+		list:[],
+		tno:""
+		
+	},
+	created:function(){
+		 this.Qtype(); 
+	},
+	methods:{
+		addCart(gno){
+			var tno=location.hash.substring(1);
+			axios.get("cart.do?op=addcart&gno="+gno).then(res=>{
+				//this.goods=res.data;
+				//console.log(res);
+				alert(res.data);
+				location.href="clist.html?#"+tno;
+			});
+		},
+		Qtype:function(){
+			var tno=location.hash.substring(1);
+			axios({
+				url:"../QueryList.do?tno="+tno,
+				params:{
+					tno:this.tno
+				}
+			}).then((res)=>{
+				vue2.$data.list=res.data
+			});
+		}
+	}
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>管理员信息</title>
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../js/axios.min.js"></script>
+
+
+<style type="text/css">
+input{
+	width:200px;
+}
+</style>
+<script type="text/javascript">
+//图片字段的格式化方法
+function fmtImg(value,row,index){
+	return "<img height='100px' src='"+value+"'>";
+}
+
+//日期字段的格式化方法
+function fmtDate(date){
+	var y=date.getFullYear();
+	var m=date.getMonth()+1;
+	var d=date.getDate();
+	return y+"-"+m+'-'+d;
+}
+function query(){
+	$('#dg').datagrid('load',{
+		aname:$("#aname").textbox('getValue'),
+		tel:$("#tel").textbox('getValue'),
+
+	});
+}
+
+//操作字段的格式化方法
+function fmtOp(value,row,index){
+	return "<button onclick='edit("+index+")'>修改 </button>  "+" <button onclick='del("+index+")'>删除 </button>";
+} 
+
+function del(index){
+	var msg="确定要删除该管理员信息吗？";
+	if(confirm(msg)){
+		var row=$('#dg').datagrid("getRows");
+		axios({
+			url:"../../../Admin.do?op=DeleteAdmin",
+			params:{
+				aid:row[index].aid
+			}
+		}).then((res)=>{
+			alert(res.data);
+			$('#dg').datagrid("reload");
+		});
+	}else{
+		return false;
+	}
+	
+}
+
+//打开修改窗口
+function edit(index){
+	var rows=$('#dg').datagrid("getRows");
+	$("#dd").dialog('open');
+	var row=rows[index];
+	$('#ff').form('load',row);
+	upImg1.src =rows[index].photo;
+}
+
+function insert(){
+	$("#ad").dialog('open');
+}
+
+
+function save(){
+	$('#ff').form('submit',{
+		url:"../../../SaveAdmin.do",
+		//回调函数
+		success:res=>{
+			alert(res);
+			//关闭窗口
+			$("#dd").dialog('close');
+			//刷新表格
+			$("#dg").datagrid('reload');
+		}
+	});
+}
+
+function add(){
+	$('#fa').form('submit',{
+		url:"../../../AddAdmin.do",
+		//回调函数
+		success:res=>{
+			alert(res);
+			//关闭窗口
+			$("#ad").dialog('close');
+			//刷新表格
+			$("#da").datagrid('reload');
+		}
+	});
+
+
+}
+
+
+function upload(newValue, oldValue){
+	var url = "../../../UploadServlet.do";
+	var fd = new FormData(fa);
+	axios.post(url, fd).then(res=>{
+		alert(res.data.msg);
+		if(res.data.code){
+			res.data.data = res.data.data;
+			upImg.src = res.data.data;//展示图片
+			$("#photo").textbox('setValue',res.data.data);
+		}
+	});
+}
+
+function upload1(newValue, oldValue){
+	var url = "../../../UploadServlet.do";
+	var fd = new FormData(ff);
+	axios.post(url, fd).then(res=>{
+		alert(res.data.msg);
+		if(res.data.code){
+			res.data.data = res.data.data;
+			upImg1.src = res.data.data;//展示图片
+			$("#photo1").textbox('setValue',res.data.data);
+		}
+	});
+}
+</script>
+</head>
+<body>
+
+<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'north'" style="height:50px">
+		<input class="easyui-textbox" label="姓名：" style="width:200px " id="aname">
+		<input class="easyui-textbox" label="手机号码：" style="width:200px"  id="tel">
+		<a id="btn" href="#" class="easyui-linkbutton" 
+		data-options="iconCls:'icon-search'"
+		onclick="query()">查询</a>
+		<a id="bin" href="#" class="easyui-linkbutton" 
+		data-options="iconCls:'icon-add'"
+		onclick="insert()">新增</a>
+		</div>
+		<div data-options="region:'center',title:'查询结果',iconCls:'icon-ok'">
+			<table class="easyui-datagrid" id="dg"
+					data-options="
+					url:'../../../Admin.do?op=QueryAdmin',
+					method:'get',
+					border:false,
+					singleSelect:true,
+					fit:true,
+					fitColumns:true,
+					pagination:true,"><!-- 等比分配屏幕宽度 -->
+					
+				<thead>
+					<tr>
+						<th data-options="field:'aid'" width="100">编号</th>
+						<th data-options="field:'aname'" width="100">名字</th>
+						<th data-options="field:'pwd'" width="100">密码</th>
+						<th data-options="field:'tel'" width="100">电话</th>
+						<th data-options="field:'status'" width="100">状态</th>
+						<th data-options="field:'photo' ,
+							width:100,
+							formatter:fmtImg,
+							align:'center'">头像</th>
+						<th data-options="field:'date'" width="100">注册时间</th>
+						<th data-options="field:'idd'" width="100" formatter="fmtOp" align="center" colspan="2">操作</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	
+	
+	<div data-options="region:'center',title:'新增结果',iconCls:'icon-ok'">
+			<table class="easyui-datagrid" id="da"
+					data-options="
+					url:'../../../Admin.do?op=AddAdmin',
+					method:'get',
+					border:false,
+					singleSelect:true,
+					fit:true,
+					fitColumns:true"><!-- 等比分配屏幕宽度 -->
+				<thead>
+					<tr>
+						<th data-options="field:'aid'" width="100" >编号</th>
+						<th data-options="field:'aname'" width="100">名字</th>
+						<th data-options="field:'pwd'" width="100">密码</th>
+						<th data-options="field:'tel'" width="100">电话</th>
+						<th data-options="field:'status'" width="100">状态</th>
+						<th data-options="field:'photo' ,
+							width:100,
+							formatter:fmtImg,
+							align:'center'">头像</th>
+						<th data-options="field:'date'" width="100">注册时间</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	
+	<!-- 编辑窗口 -->
+	<div id="dd" class="easyui-dialog" title="编辑管理员信息" style="width:400px;height:400px;"
+    data-options="
+    iconCls:'icon-save',
+    resizable:true,
+    modal:true,
+    closed:true,
+    buttons:'#bb'">
+    <form action="#" id="ff">
+    <input class="easyui-textbox" name="aid" label="编号:" ><br>
+	<input class="easyui-textbox" name="aname" label="名字:"><br>
+	<input class="easyui-textbox" name="pwd" label="密码:"><br>
+	<input class="easyui-textbox" name="tel" label="电话:"><br>
+	<input class="easyui-combobox" name="status" label="状态:"
+	data-options="
+		valueField: 'label',
+		textField: 'value',
+		data: [{
+			label: '正常',
+			value: '正常'
+		},{
+			label: '冻结',
+			value: '冻结'
+		},]"
+	><br>
+	<input class="easyui-textbox" name="photo" label="头像:" id="photo1"><br>
+	<input class="easyui-datebox" name="date" label="注册时间:" data-options="formatter:fmtDate"><br>
+	
+	<div style="display: none">
+	    <input class="easyui-filebox" label="选择" id="file" name="file" style="width: 300px"
+	    data-options="onChange:upload1"><br>
+	</div>
+	<img alt="" src="" height="100px" id="upImg1" 
+		        onclick="filebox_file_id_1.click()"><br>
+	</form>
+</div>
+	
+	
+	<div id="bb">
+	<a href="#" class="easyui-linkbutton" onclick="save()">保存</a>
+	<a href="#" class="easyui-linkbutton">取消</a>
+</div>
+
+
+<!-- 新增窗口 -->
+	<div id="ad" class="easyui-dialog" title="添加管理员" style="width:400px;height:400px;"
+    data-options="
+    iconCls:'icon-add',
+    resizable:true,
+    modal:true,
+    closed:true,
+    buttons:'#bt'">
+    <form action="#" id="fa">
+	<input class="easyui-textbox" name="aname" label="姓名:" id="aname"><br>
+	<input class="easyui-textbox" name="pwd" label="密码:" id="pwd"><br>
+	<input class="easyui-textbox" name="tel" label="电话:" id="tel"><br>
+	<input class="easyui-textbox" name="photo" label="头像:" id="photo"><br>
+	<div style="display: none">
+	    <input class="easyui-filebox" label="选择" id="file" name="file" style="width: 300px"
+	    data-options="onChange:upload"><br>
+	</div>
+	<img alt="" src="../../image/2.jpg" height="100px" id="upImg" 
+		        onclick="filebox_file_id_2.click()"><br>
+</form>
+</div>
+	
+	<div id="bt">
+	<a href="#" class="easyui-linkbutton" onclick="add()">添加</a>
+	<a href="#" class="easyui-linkbutton">取消</a>
+</div>
+</body>
+</html>
