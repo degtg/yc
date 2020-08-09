@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">   
+<title>添加书签</title>
+<script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/axios.min.js"></script>
+</head>
+<body>
+   	<div id="fax">
+   		名称：<input v-model="flabel"><br>
+   		地址：<input v-model="furl"><br>
+   		分类：<input v-model="ftags"><br>
+   		描述：<textarea v-model="fdesc"></textarea><br>
+   		<button @click="add()">添加</button>
+   	</div>
+   	
+   	<script type="text/javascript">
+   		var vue=new Vue({
+   			el:"#fax",
+   			data:{
+   				flabel:"",
+   				furl:"",
+   				ftags:"",
+   				fdesc:""
+   			},
+   			methods:{
+   				add(){
+   					axios({
+   						url:"AddFavorite.do",
+   						params:{
+   							flabel:this.flabel,
+   							furl:this.furl,
+   							ftags:this.ftags,
+   							fdesc:this.fdesc,
+   						}
+   					}).then(res=>{
+   						alert(res.data);
+   						this.data=res.data;
+   					});
+   				}
+   			}
+   		});
+   	</script>
+</body>
+</html>
