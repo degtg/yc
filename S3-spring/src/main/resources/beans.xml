@@ -16,5 +16,28 @@
     <bean id="odao" class="com.yc.spring.dao.OracleUserDao">   
         <!-- collaborators and configuration for this bean go here -->
     </bean>
+    
+    <!-- 
+    	spring 依赖注入（DI）注入方式有三种
+    	注入：对象属性初始化设值
+    	1、setter注入（set方法注入）
+    	2、构造方法注入
+    	3、接口注入==》springMVC大量应用
+     -->
+	<!-- 注入的例子是使用是实体对象，实际开发中很少对实体对象设值 -->
+	<bean id="p1" class="com.yc.spring.bean.Person">
+	<!-- property实现setter注入 -->
+		<property name="name" value="王默"></property>
+		<property name="age" value="12"></property>
+		<property name="killeds" >
+			<list>
+				<value type="java.lang.String">镜像兽</value>
+				<value>wfff</value>
+				<value type="java.lang.String">wm</value>
+				<value>null</value>
+			</list>
+		</property>
+		
+	</bean>
 
 </beans>

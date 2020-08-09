@@ -1,11 +1,31 @@
 package com.yc.spring;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.yc.spring.bean.Person;
 import com.yc.spring.dao.UserDao;
 
+
+
 public class HelloTest {
+	
+	private ClassPathXmlApplicationContext ctx;
+	
+	@Before
+	public void before() {
+		ctx =new ClassPathXmlApplicationContext("beans.xml");
+		
+	}
+	
+	@After
+	public void after() {
+		ctx =new ClassPathXmlApplicationContext("beans.xml");
+		
+	}
 	
 	@Test
 	public void test() {
@@ -50,5 +70,15 @@ public class HelloTest {
 		udao.selectUserId("sisi");
 		odao.selectUserId("sisi");
 		ctx.close();
+	}
+	
+	
+	@Test
+	public void test2() {
+		Person p1=(Person) ctx.getBean("p1");
+		Assert.assertEquals("王默", p1.getName());
+		Assert.assertEquals(12, p1.getAge());
+		Assert.assertEquals(4, p1.getKilleds().size());
+		Assert.assertEquals("wm", p1.getKilleds().get(2));
 	}
 }
