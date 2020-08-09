@@ -11,6 +11,52 @@ public class Person {
 	private List<String> killeds;
 	private int height;
 	private String alisa;
+	
+	private Person friend;
+	
+	/**
+	 * 静态工厂方法
+	 */
+	public static Person PersonFactory() {
+		Person p=new Person();
+		p.setAge(40);
+		return p;
+	}
+	
+	
+	/**
+	 * 实例工厂方法
+	 */
+	public Person PersonFactory1() {
+		Person p=new Person();
+		p.setAge(20);
+		return p;
+	}
+	public Person() {
+	}
+	public Person(int age, String name, String alisa) {
+		super();
+		System.out.println("=============1===============");
+		this.name = name;
+		this.age = age;
+		this.alisa = alisa;
+	}
+	
+	public Person(String name, int age, String alisa) {
+		super();
+		System.out.println("=============2===============");
+		this.name = name;
+		this.age = age;
+		this.alisa = alisa;
+	}
+	
+	
+	public Person getFriend() {
+		return friend;
+	}
+	public void setFriend(Person friend) {
+		this.friend = friend;
+	}
 	public String getName() {
 		return name;
 	}

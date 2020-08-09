@@ -35,9 +35,43 @@
 				<value>wfff</value>
 				<value type="java.lang.String">wm</value>
 				<value>null</value>
+				<!-- <null></null> -->
 			</list>
 		</property>
 		
 	</bean>
 
+<!-- primary="true" 设置当前的bean是主要的bean -->
+<!-- index可以用来指定构造函数 -->
+	<bean class="com.yc.spring.bean.Person" primary="true">
+		<constructor-arg name="name" value="likui" index="1"></constructor-arg>
+		<constructor-arg name="alisa" value="likui" index="2"></constructor-arg>
+		<constructor-arg name="age" value="30" index="0"></constructor-arg>
+		
+	</bean>
+	
+	<bean id="p2" class="com.yc.spring.bean.Person">
+		<property name="name" value="wuyong"></property>
+		<property name="age" value="38"></property>
+		<property name="friend" ref="p3">
+		</property>
+	</bean>
+	
+	<bean id="p3" class="com.yc.spring.bean.Person">
+		<property name="name" value="huarong"></property>
+	</bean>
+	
+	<!-- 静态 工厂方法配置 工厂方式创建对象 -->
+	<bean id="p4" class="com.yc.spring.bean.Person" factory-method="PersonFactory">
+		<property name="name" value="wangying"></property>
+	</bean>
+	
+	<!-- 实例工厂方法配置 -->
+	<bean id="p5" class="com.yc.spring.bean.Person" 
+		factory-method="PersonFactory1" factory-bean="personFactory">
+		<property name="name" value="husanniang"></property>
+	</bean>
+	
+	<bean id="personFactory" class="com.yc.spring.bean.Person"> 
+	</bean>
 </beans>

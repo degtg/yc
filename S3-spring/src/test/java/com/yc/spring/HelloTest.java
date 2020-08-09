@@ -81,4 +81,34 @@ public class HelloTest {
 		Assert.assertEquals(4, p1.getKilleds().size());
 		Assert.assertEquals("wm", p1.getKilleds().get(2));
 	}
+	
+	@Test
+	public void test3() {
+		Person p1=(Person) ctx.getBean(Person.class);
+		Assert.assertEquals("likui", p1.getName());
+		Assert.assertEquals(30, p1.getAge());
+		Assert.assertEquals(null, p1.getKilleds());
+	}
+	
+	@Test
+	public void test4() {
+		Person p1=(Person) ctx.getBean("p2");
+		Assert.assertEquals("wuyong", p1.getName());
+		Assert.assertEquals(38, p1.getAge());
+		Assert.assertEquals("huarong", p1.getFriend().getName());
+	}
+	
+	@Test
+	public void test5() {
+		Person p1=(Person) ctx.getBean("p4");
+		Assert.assertEquals("wangying", p1.getName());
+		Assert.assertEquals(40, p1.getAge());
+	}
+	
+	@Test
+	public void test6() {
+		Person p1=(Person) ctx.getBean("p5");
+		Assert.assertEquals("husanniang", p1.getName());
+		Assert.assertEquals(20, p1.getAge());
+	}
 }
