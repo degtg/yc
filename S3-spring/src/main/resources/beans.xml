@@ -91,4 +91,27 @@
 	<bean id="hello2" class="com.yc.spring.Hello" lazy-init="true"> 
 		<constructor-arg name="a" value="100"></constructor-arg>
 	</bean>
+	
+	<bean id="hello3" class="com.yc.spring.Hello" lazy-init="true"> 
+		<constructor-arg name="a" value="100"></constructor-arg>
+	</bean>
+	
+	
+	<!-- 
+		autowire="default"自动装载，根据一些规则自动的从IOC容器中获取属性值
+		byName:用属性名从容器中获取指定id的bean
+		byType:用类名从容器中获取指定类型的bena
+		constructor:根据构造方法参数的类型获取bean
+		default==>no 不自动装载
+	 -->
+	<bean id="friend" class="com.yc.spring.bean.Person"> 
+		<property name="name" value="鲁智深"></property>
+	</bean>
+	
+	
+	<bean id="p7" class="com.yc.spring.bean.Person" autowire="byName"> 
+		<property name="name" value="武松"></property>
+		<property name="age" value="35"></property>
+		
+	</bean>
 </beans>

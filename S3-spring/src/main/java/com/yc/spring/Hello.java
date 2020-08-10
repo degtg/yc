@@ -14,5 +14,14 @@ public class Hello {
 		System.out.println("hello world");
 	}
 	
+	/**
+	 * 生命周期方法不能带参数
+	 */
+	public void init() {
+		System.out.println("=====hello 被创建=========");
+	}
 	
+	public void destroy() {
+		System.out.println("=====hello 被销毁=========");
+	}
 }

@@ -147,12 +147,27 @@ public class HelloTest {
 		
 	}
 	
+	/**
+	 * 生命周期方法
+	 */
 	@Test
 	public void test9() {
-		System.out.println("==========test8===========");
+		System.out.println("==========test9===========");
 		
-		Hello h=(Hello) ctx.getBean("hello2");
+		Hello h=(Hello) ctx.getBean("hello3");
 		h.sayHello();
+		
+	}
+	
+	/**
+	 * 自动装载
+	 */
+	@Test
+	public void test10() {
+		System.out.println("==========test10===========");
+		
+		Person p7=(Person) ctx.getBean("p7");
+		System.out.println(p7.getFriend());
 		
 	}
 }
