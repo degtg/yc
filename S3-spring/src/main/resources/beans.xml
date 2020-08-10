@@ -74,4 +74,21 @@
 	
 	<bean id="personFactory" class="com.yc.spring.bean.Person"> 
 	</bean>
+	
+	<!-- 
+		scope="singleton" 单例  默认每次getBean的时候，都会使用 同一个bean
+		scope="prototype" 原型（多利）每次getBean的时候，都会创建一个新的bean
+		其他作用域： session,request,global
+		prototype 模式每次都会创建新的bean ,每次都会调用new or 工厂方法
+	 -->
+	<bean id="hello1" class="com.yc.spring.Hello" scope="prototype"> 
+	</bean>
+	
+	<!-- 
+	lazy-init 懒加载，默认为false,spring 容器在启动时，就会创建所有未配置懒加载bean
+	prototype 原型模式下默认懒加载
+	 -->
+	<bean id="hello2" class="com.yc.spring.Hello" lazy-init="true"> 
+		<constructor-arg name="a" value="100"></constructor-arg>
+	</bean>
 </beans>

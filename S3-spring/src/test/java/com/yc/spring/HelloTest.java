@@ -111,4 +111,48 @@ public class HelloTest {
 		Assert.assertEquals("husanniang", p1.getName());
 		Assert.assertEquals(20, p1.getAge());
 	}
+	
+	/**
+	 * bean的作用域
+	 * 默认情况下，bean的作用域是单例模式
+	 */
+	@Test
+	public void test7() {
+		System.out.println("==========test7===========");
+		
+		Hello h=(Hello) ctx.getBean("hello");
+		Hello h0_1=(Hello) ctx.getBean("hello");
+		Hello h0_2=(Hello) ctx.getBean("hello");
+		
+		Hello h1=(Hello) ctx.getBean("hello1");
+		Hello h1_1=(Hello) ctx.getBean("hello1");
+		Hello h1_2=(Hello) ctx.getBean("hello1");
+		
+		
+		System.out.println(h=h1);//false
+		System.out.println(h0_1=h0_2);//true
+		System.out.println(h1_1=h1_2);//false
+		System.out.println(h1=h1_1);//false
+		System.out.println(h1=h1_2);//false
+		
+	}
+	
+	
+	@Test
+	public void test8() {
+		System.out.println("==========test8===========");
+		
+		Hello h=(Hello) ctx.getBean("hello2");
+		h.sayHello();
+		
+	}
+	
+	@Test
+	public void test9() {
+		System.out.println("==========test8===========");
+		
+		Hello h=(Hello) ctx.getBean("hello2");
+		h.sayHello();
+		
+	}
 }
