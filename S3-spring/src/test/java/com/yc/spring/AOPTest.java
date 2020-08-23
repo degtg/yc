@@ -1,12 +1,14 @@
 package com.yc.spring;
 
 import org.junit.Test;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.yc.spring.bean.Person;
 import com.yc.spring.dao.AOPConfig;
 import com.yc.spring.dao.UserDao;
 
@@ -21,6 +23,11 @@ public class AOPTest {
 	@Autowired
 	@Qualifier("odao")
 	private UserDao odao;
+	/*
+	 * @Autowired private Person person;
+	 */
+	@Autowired
+	private Hello hello;
 	@Test
 	public void test1() {
 		System.out.println("======1=======");
@@ -28,5 +35,14 @@ public class AOPTest {
 		System.out.println("=====2=========");
 		mdao.selectUserId("");
 		System.out.println("===========3==========");
+	}
+	
+	@Test
+	public void test2() {
+		System.out.println(mdao);
+		System.out.println(odao);
+		//System.out.println(person);
+		System.out.println(hello);
+
 	}
 }

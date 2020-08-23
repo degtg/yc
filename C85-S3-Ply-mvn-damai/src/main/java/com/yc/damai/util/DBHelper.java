@@ -110,9 +110,9 @@ public class DBHelper {
 	 * @return
 	 */
 	public Connection openConnection() {
-		String url = "jdbc:mysql://127.0.0.1/dmsc"; // 数据库的地址
+		String url = "jdbc:mysql://121.89.217.1/dmsc"; // 数据库的地址
 		String user = "root"; // 数据的用户
-		String password = "a";
+		String password = "CMLy0423";
 		try {
 			if(isAutoCommit) {
 				return DriverManager.getConnection(url, user, password);
