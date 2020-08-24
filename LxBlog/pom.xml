@@ -33,7 +33,12 @@
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>2.1.3</version>
 		</dependency>
-
+		<!-- 分页查询插件启动器 -->
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper-spring-boot-starter</artifactId>
+			<version>1.2.13</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
