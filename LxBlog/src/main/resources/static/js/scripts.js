@@ -136,7 +136,7 @@ $(function(){
 	});
 	// 加载图片
 	ias.extension(new IASSpinnerExtension({
-	    src: 'loading.gif', // 图片地址
+	    src: 'images/loading.gif', // 图片地址
 	}));
 
 	ias.extension(new IASTriggerExtension({
