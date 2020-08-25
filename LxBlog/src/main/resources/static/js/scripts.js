@@ -167,7 +167,7 @@ $(window).scroll(function () {
 };*/
 
 /*自定义右键菜单*/
-(function () {
+/*(function () {
     var oMenu = document.getElementById("rightClickMenu");
     var aLi = oMenu.getElementsByTagName("li");
 	//加载后隐藏自定义右键菜单
@@ -201,7 +201,7 @@ $(window).scroll(function () {
         $(oMenu).fadeOut(100);
 		//oMenu.style.display = "none"
     }
-})();
+})();*/
 
 /*禁止键盘操作*/
 /*document.onkeydown=function(event){

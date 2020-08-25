@@ -1,6 +1,7 @@
 package com.yc.LxBlog.web;
 
 import java.util.HashMap;
+
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,6 +14,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yc.LxBlog.bean.Result;
 import com.yc.LxBlog.bean.User;
@@ -76,17 +79,24 @@ public class UserAction {
 	 * 登录，ajax提交
 	 * @param user
 	 */
-	@PostMapping("login.do")
-	public Result login(User user,HttpSession session) {
+	@RequestMapping("login.do")
+	// 是在 Controller 使用 ==> 方法返回视图名 
+	// @ResponseBody 表示该方法的返回值是json数据
+	@ResponseBody
+	public Result login(@Valid User user,Errors errors,HttpSession session) {
 		try {
-			User dbuser=ubiz.login(user);
+			if(errors.hasFieldErrors("account")||errors.hasFieldErrors("pwd")) {
+				Result res=new Result(0, "验证错误!", errors.getFieldErrors());
+				return res;
+			}
+			User dbuser = ubiz.login(user);
 			session.setAttribute("loginedUser", dbuser);
+			return new Result(1, "登录成功!", dbuser);
 		} catch (BizException e) {
 			e.printStackTrace();
 			return new Result(e.getMessage());
 		}
 		
-		return new Result(1,"登录成功");
 		
 	}
 }
