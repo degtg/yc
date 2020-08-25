@@ -61,7 +61,7 @@ public class UserAction {
 	 * 登录，ajax提交
 	 * @param user
 	 */
-	@RequestMapping("login.do")
+	@PostMapping("login.do")
 	// 是在 Controller 使用 ==> 方法返回视图名 
 	// @ResponseBody 表示该方法的返回值是json数据
 	@ResponseBody
