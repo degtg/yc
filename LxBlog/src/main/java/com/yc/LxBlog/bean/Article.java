@@ -2,6 +2,9 @@ package com.yc.LxBlog.bean;
 
 import java.sql.Timestamp;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+
 public class Article implements java.io.Serializable{
 
 	/**
@@ -10,11 +13,15 @@ public class Article implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private String author;
+	@NotEmpty
 	private String title;
+	@NotEmpty
 	private String content;
 	private String keywords;
 	private String description;
+	@Min(1)
 	private Integer categoryid;
+	@NotEmpty
 	private String label;
 	private String titleimgs;
 	private String status;

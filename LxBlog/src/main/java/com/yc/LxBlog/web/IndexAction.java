@@ -15,7 +15,7 @@ public class IndexAction {
 	@Resource
 	private ArticleMapper amapper;
 
-	@GetMapping("/")
+	@GetMapping({"/","/index.html"})//再配一个地址，就不用替换首页地址了
 	public String index(Model m,@RequestParam(defaultValue="1") int page) {
 		//在执行查询前，设置分页参数
 		//注意，必须是在查询方法之前，调用分页参数设置
@@ -25,15 +25,10 @@ public class IndexAction {
 		
 	}
 	
-	@GetMapping("article")
-	public String article(int id,Model m) {
-		m.addAttribute("article", amapper.selectById(id));
-		return "article";
-		
-	}
-	@GetMapping("addArticle")
-	public String addArticle() {
-		return "addArticle";
-		
-	}
+	
+	/*
+	 * @GetMapping("addArticle") public String addArticle() { return "addArticle";
+	 * 
+	 * }
+	 */
 }
