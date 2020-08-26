@@ -28,6 +28,19 @@ public class Article implements java.io.Serializable{
 	private Timestamp createtime;
 	private Integer readcnt;
 	private Integer agreecnt;
+	
+	/**
+	 * 所属分类对象
+	 */
+	private Category category;
+	
+	
+	public Category getCategory() {
+		return category;
+	}
+	public void setCategory(Category category) {
+		this.category = category;
+	}
 	public Integer getId() {
 		return id;
 	}
