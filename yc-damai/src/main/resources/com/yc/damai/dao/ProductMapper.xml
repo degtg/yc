@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.damai.dao.DmProductMapper">
+<!-- 自定义的字段映射 -->
+<resultMap type="com.yc.damai.po.DmProduct" id="rmdp">
+<!-- id -->
+<id column="market_price" property="marketPrice"></id>
+<id column="shop_price" property="shopPrice"></id>
+<id column="is_hot" property="isHot"></id>
+</resultMap>
+
+
+  <select id="selectAll" resultMap="rmdp">
+    SELECT * FROM dm_product
+  </select>
+  
+   <select id="selectById" resultMap="rmdp">
+    SELECT * FROM dm_product where id = #{id}
+  </select>
+  
+   <select id="selectByObj" resultMap="rmdp">
+   select * from dm_product
+    <where>
+    <if test="pname!=null">
+    	and pname like concat('%', #{pname}, '%')
+    </if>
+    
+    <if test="pdesc!=null">
+    and pdesc like concat('%', #{pdesc}, '%')
+    </if>
+    <!-- 
+    	isHot 有值（0或1） isHot = 值
+    	isHot 无值 isHot is null
+    	isHot -1 isHot is not null
+    	isHot -2 exists (复杂子查询)
+     -->
+     <choose>
+     	<when test="isHot == null">
+     		and is_hot is null
+     	</when>
+     	<when test="isHot==-1">
+     		and is_hot is null
+     	</when>
+     	<otherwise>
+     	and is_hot = #{isHot}
+     	</otherwise>
+     </choose>
+    </where>
+  </select>
+  
+   <select id="selectByCids" resultMap="rmdp">
+   select * from dm_product where
+   <!--  cid in (1,3,4) 
+  	String sql = "cid in (" 
+  	for (cid : cids){
+  		sql + = cid
+  	}
+  	sql += ")"
+   -->
+   <foreach item="cid" collection="cids"
+   open="cid in (" close=")" separator=",">
+   #{cid}
+   </foreach>
+  </select>
+  
+  <update id="update">
+  update dm_product
+  <set>
+  	<if test="marketPrice!=null">
+  	market_price=#{marketPrice},
+  	</if>
+  	<if test="shopPrice!=null">
+  	shop_Price=#{shopPrice},
+  	</if>
+  	<if test="image!=null">
+  	image=#{image},
+  	</if>
+  	<if test="pdesc!=null">
+  	pdesc=#{pdesc}
+  	</if>
+  	<if test="isHot!=null">
+  	is_hot=#{isHot}
+  	</if>
+  	<if test="createtime!=null">
+  	createtime=#{createtime}
+  	</if>
+  	<if test="cid!=null">
+  	cid=#{cid}
+  	</if>
+  </set>
+  where id=#{id}
+  </update>
+</mapper>
+

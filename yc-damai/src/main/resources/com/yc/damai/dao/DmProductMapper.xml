@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yc.damai.dao.DmProductMapper">
+  <select id="selectById" resultType="com.yc.damai.po.DmProduct">
+    SELECT * FROM dm_product
+  </select>
+  <insert id="insertproduct">
+  	insert into dm_product values(null , #{pname} , #{marketPrice} , #{shopPrice} , #{image} , #{pdesc} , #{isHot} , now() , #{cid})
+  </insert>
+  <update id="updateproduct">
+  	update dm_product set pname = #{pname} , market_Price = #{marketPrice} , shop_Price = #{shopPrice} <!--  , image = #{image} , pdesc= #{pdesc} , isHot = #{isHot} , cid = #{cid} -->
+  	where id = #{id}
+  </update>
+  <delete id="deleteproduct">
+  	delete from dm_product where id = #{id}
+  </delete>
+  
+  <insert id="insert">
+  	insert into dm_category values( null, #{cname} , #{pid} )
+  </insert>
+  <update id="update">
+  	update dm_category set cname = #{cname} , pid = #{pid}
+  	where id = #{id}
+  </update>
+  
+  <delete id="delete">
+  	delete from dm_category where id = #{id}
+  </delete>
+</mapper>
+

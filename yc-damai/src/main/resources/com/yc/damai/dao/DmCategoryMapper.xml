@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!--  namespace 是当前接口的命名空间 
+  	XML 中类路径可以使用 ctrl + 鼠标键 ==> 编程手型鼠标 ==> 对
+  -->
+<mapper namespace="com.yc.damai.dao.DmCategoryMapper">
+  
+  <resultMap type="com.yc.damai.po.DmCategory" id="rmdc">
+	<!-- 订单详细对应的商品 一对一关联查询
+		select 用于指定完成关联查询的sql的id ==>
+	 -->
+	<collection property="children" column="id" 
+	select="selectChildren" fetchType="lazy"></collection>
+  </resultMap>
+  
+  <select id="selectChildren" resultType="com.yc.damai.po.DmCategory">
+    SELECT * FROM dm_category where pid=#{id}
+  </select>
+  <select id="selectAll" resultMap="rmdc">
+    SELECT * FROM dm_category
+  </select>
+  
+  <insert id="insert">
+  	insert into dm_category values( null, #{cname} , #{pid} )
+  </insert>
+  <update id="update">
+  	update dm_category set cname = #{cname} , pid = #{pid}
+  	where id = #{id}
+  </update>
+  
+  <delete id="delete">
+  	delete from dm_category where id = #{id}
+  </delete>
+</mapper>
+
