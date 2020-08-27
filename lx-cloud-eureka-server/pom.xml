@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.yc</groupId>
-	<artifactId>lx-cloud-order</artifactId>
+	<artifactId>lx-cloud-eureka-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<parent>
@@ -30,6 +30,11 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+		<!-- Euraka 注册服务器依赖  -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
 		</dependency>
 	</dependencies>
 
